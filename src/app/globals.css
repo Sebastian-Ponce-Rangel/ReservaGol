@@ -1,0 +1,77 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --page-bg: #071a13;
+  --green: #9fffb5;
+  --green-dark: #143b25;
+  --text: #eefcf3;
+  --muted: #b8d8bf;
+  --line: #e0ffe8;
+}
+
+body {
+  margin: 0;
+  color: var(--text);
+  background: radial-gradient(circle at top, var(--green-dark), var(--page-bg));
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.page-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.hero {
+  width: min(780px, 100%);
+  border: 1px solid var(--line);
+  border-radius: 1.5rem;
+  padding: 3rem;
+  background: rgba(14, 67, 33, 0.62);
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.badge {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.4rem 0.8rem;
+  color: var(--green);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  font-size: clamp(3rem, 8vw, 4.8rem);
+  margin: 0;
+  color: var(--text);
+  text-align: center;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 1.2rem;
+  margin: 0 0 1rem;
+}
+
+.primary-button {
+  background: var(--green);
+  color: var(--page-bg);
+  border: none;
+  border-radius: 0.9rem;
+  padding: 0.85rem 1.5rem;
+  font-weight: 800;
+  cursor: pointer;
+}

@@ -1,9 +1,5 @@
-import { HomeHero } from '@/components/HomeHero';
+import LoginPage from './login/page';
 
 export default function HomePage() {
-  return (
-    <main className="page-shell">
-      <HomeHero />
-    </main>
-  );
+  return <LoginPage />;
 }

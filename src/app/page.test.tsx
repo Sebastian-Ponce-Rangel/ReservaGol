@@ -1,15 +1,34 @@
-import { render, screen } from '@testing-library/react';
-import { vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import HomePage from './page';
 
+const { redirect, obtenerSesion } = vi.hoisted(() => ({
+  redirect: vi.fn(),
+  obtenerSesion: vi.fn(),
+}));
+
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn() }),
+  redirect,
+}));
+
+vi.mock('@/lib/auth/sesion', () => ({
+  obtenerSesion,
 }));
 
 describe('HomePage', () => {
-  it('renders the login screen at the home route', () => {
-    render(<HomePage />);
-    expect(screen.getByRole('heading', { name: 'Bienvenido de vuelta' })).toBeInTheDocument();
-    expect(screen.getByLabelText('Correo electrónico')).toBeInTheDocument();
+  beforeEach(() => {
+    redirect.mockClear();
+    obtenerSesion.mockReset();
+  });
+
+  it('redirige al login sin sesión', async () => {
+    obtenerSesion.mockResolvedValue(null);
+    await HomePage();
+    expect(redirect).toHaveBeenCalledWith('/login');
+  });
+
+  it('redirige a reservas con sesión', async () => {
+    obtenerSesion.mockResolvedValue({ email: 'admin@reservagol.com' });
+    await HomePage();
+    expect(redirect).toHaveBeenCalledWith('/reservas');
   });
 });

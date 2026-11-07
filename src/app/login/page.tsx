@@ -32,16 +32,26 @@ export default function LoginPage() {
     if (Object.keys(nextErrors).length > 0) return;
 
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), password }),
+      });
+      const resultado = await response.json();
 
-    // TODO: conectar con la API real
-    if (email.trim().toLowerCase() === 'demo@reservagol.com' && password === 'demo1234') {
-      router.push('/reservas');
-      return;
+      if (!response.ok || !resultado.ok) {
+        setAuthError(resultado.error?.mensaje ?? 'Correo o contraseña incorrectos');
+        setIsSubmitting(false);
+        return;
+      }
+
+      router.replace('/reservas');
+      router.refresh();
+    } catch {
+      setAuthError('No fue posible iniciar sesión. Intenta de nuevo.');
+      setIsSubmitting(false);
     }
-
-    setAuthError('Correo o contraseña incorrectos');
-    setIsSubmitting(false);
   }
 
   return (

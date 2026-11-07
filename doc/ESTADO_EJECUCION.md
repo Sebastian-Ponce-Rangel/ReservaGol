@@ -5,7 +5,7 @@
 | P00 | Conciliación | Completado | `ESTADO_ACTUAL.md`, `DICTAMEN.md`, instrucciones y checkpoint Fase 0 |
 | P01 | Base de datos | Completado | M1/M2 aplicadas; `db:verificar` sin fallas; build correcto |
 | P02 | Reglas de negocio | Completado | 25 casos del plan y 6 pruebas existentes pasan; build correcto |
-| P03 | Infraestructura del servidor | Pendiente | |
+| P03 | Infraestructura del servidor | Completado; configurar credenciales para uso manual | 42 tests, build y smoke checks correctos |
 | P04 | Datos | Pendiente | |
 | P05 | API | Pendiente | |
 | P06 | Interfaz base, canchas y clientes | Pendiente | |
@@ -40,3 +40,13 @@
 - `npm.cmd test`: 31 pruebas pasaron (25 nuevas y 6 preexistentes).
 - `npm.cmd run build`: exitoso; compilación, tipos y páginas estáticas correctos.
 - Evidencia completa: `doc/checkpoints/FASE_2_COMPLETADA.md`.
+
+### P03 · 2026-11-07 · Completado
+
+- Se adaptó el login demostrativo a `POST /api/auth/login` con comparación de credenciales en tiempo constante y cookie HMAC firmada, HttpOnly, SameSite=Lax y expiración de siete días. Se añadió logout.
+- `src/proxy.ts` protege `/reservas/:path*` y `/api/reservas/:path*`; las API devuelven 401 JSON sin sesión. La ruta de sesión requiere `exigirSesion()` y es dinámica.
+- Se añadieron `conexion.ts` con parsers de `pg`, respuestas `no-store`, esquemas Zod y formatos de dinero/fecha/hora. La conexión de aplicación usa `RESERVAGOL_POSTGRES_URL` y normaliza SSL en memoria.
+- `npm.cmd test`: 42 pruebas pasaron. `npm.cmd run build`: exitoso.
+- Smoke en Next dev: `/` y `/reservas` redirigen a `/login`; `GET /api/reservas/sesion` devuelve 401 con `Cache-Control: no-store`.
+- No se leyeron ni escribieron credenciales locales. Para iniciar sesión manualmente hay que configurar `RESERVAGOL_ADMIN_EMAIL`, `RESERVAGOL_ADMIN_PASSWORD` y `RESERVAGOL_SESSION_SECRET` (mínimo 32 caracteres) en `.env.local` y en Vercel. Tests usan variables efímeras.
+- Evidencia completa: `doc/checkpoints/FASE_3_COMPLETADA.md`.

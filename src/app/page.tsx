@@ -1,5 +1,7 @@
-import LoginPage from './login/page';
+import { redirect } from 'next/navigation';
+import { obtenerSesion } from '@/lib/auth/sesion';
 
-export default function HomePage() {
-  return <LoginPage />;
+export default async function HomePage() {
+  const sesion = await obtenerSesion();
+  redirect(sesion ? '/reservas' : '/login');
 }

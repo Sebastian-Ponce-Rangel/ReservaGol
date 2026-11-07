@@ -3,7 +3,7 @@
 | Prompt | Fase | Estado | Evidencia |
 |---|---|---|---|
 | P00 | Conciliación | Completado | `ESTADO_ACTUAL.md`, `DICTAMEN.md`, instrucciones y checkpoint Fase 0 |
-| P01 | Base de datos | Pendiente | |
+| P01 | Base de datos | Bloqueado: registro npm inaccesible | `npm.cmd install pg` falla con `ECONNRESET` |
 | P02 | Reglas de negocio | Pendiente | |
 | P03 | Infraestructura del servidor | Pendiente | |
 | P04 | Datos | Pendiente | |
@@ -22,3 +22,9 @@
 - Base de datos: hay nombres de variables Supabase/Postgres configurados localmente. No se leyeron valores ni se verificó conectividad. Antes de P01 confirmar Transaction pooler, puerto 6543, permisos y configuración de Vercel.
 - Pruebas base: `npm.cmd test` reportó 4 pruebas pasadas y 2 suites fallidas por alias `@/` sin configurar en Vitest. Resolver durante P02.
 - Cambios del prompt: se crearon `doc/ESTADO_ACTUAL.md`, `doc/DICTAMEN.md`, `.github/copilot-instructions.md` y `doc/checkpoints/FASE_0_COMPLETADA.md`.
+
+### P01 · 2026-11-07 · Bloqueado
+
+- Confirmado localmente que `RESERVAGOL_POSTGRES_URL` apunta al Transaction pooler de Supabase, puerto 6543; no se mostró el valor.
+- `npm.cmd install pg` falló dos veces al conectar con `registry.npmjs.org` (`ECONNRESET`). `pg` y `@types/pg` no están instalados ni disponibles en caché.
+- No se crearon ni aplicaron migraciones, y no se modificó la base de datos. Reanudar P01 cuando npm registry sea accesible.

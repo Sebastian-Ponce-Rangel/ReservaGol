@@ -3,7 +3,7 @@
 | Prompt | Fase | Estado | Evidencia |
 |---|---|---|---|
 | P00 | Conciliación | Completado | `ESTADO_ACTUAL.md`, `DICTAMEN.md`, instrucciones y checkpoint Fase 0 |
-| P01 | Base de datos | Bloqueado: registro npm inaccesible | `npm.cmd install pg` falla con `ECONNRESET` |
+| P01 | Base de datos | Bloqueado: Postgres inaccesible | Scripts listos; conexión al pooler expira antes de aplicar SQL |
 | P02 | Reglas de negocio | Pendiente | |
 | P03 | Infraestructura del servidor | Pendiente | |
 | P04 | Datos | Pendiente | |
@@ -23,8 +23,11 @@
 - Pruebas base: `npm.cmd test` reportó 4 pruebas pasadas y 2 suites fallidas por alias `@/` sin configurar en Vitest. Resolver durante P02.
 - Cambios del prompt: se crearon `doc/ESTADO_ACTUAL.md`, `doc/DICTAMEN.md`, `.github/copilot-instructions.md` y `doc/checkpoints/FASE_0_COMPLETADA.md`.
 
-### P01 · 2026-11-07 · Bloqueado
+### P01 · 2026-11-07 · Preparado, bloqueado antes de aplicar
 
-- Confirmado localmente que `RESERVAGOL_POSTGRES_URL` apunta al Transaction pooler de Supabase, puerto 6543; no se mostró el valor.
-- `npm.cmd install pg` falló dos veces al conectar con `registry.npmjs.org` (`ECONNRESET`). `pg` y `@types/pg` no están instalados ni disponibles en caché.
-- No se crearon ni aplicaron migraciones, y no se modificó la base de datos. Reanudar P01 cuando npm registry sea accesible.
+- `pg` y `@types/pg` instalados desde el registro npm-compatible de Yarn después de confirmar que el registro npm oficial no era accesible.
+- Creados `supabase/migrations/0001_reservagol_tablas.sql`, `0002_reservagol_vista_seguridad.sql`, `scripts/migrar.mjs` y `scripts/verificar-bd.mjs`; agregados `db:migrar` y `db:verificar`.
+- `npm.cmd run build`: exitoso. `node --check` pasó para ambos scripts.
+- La conexión de solo lectura y `npm.cmd run db:migrar` fallan por timeout al alcanzar Postgres. El migrador no llegó a crear `_migrations` ni ejecutó SQL.
+- `npm.cmd run db:verificar`: `FALLA conexión/verificación de base: timeout`; total de fallas: 1. No hubo escrituras en la base.
+- La fase sigue incompleta. Reanudar cuando el entorno pueda alcanzar el Transaction pooler por red; entonces ejecutar migración y verificación antes de P02.

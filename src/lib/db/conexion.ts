@@ -7,8 +7,14 @@ types.setTypeParser(1184, (valor) => valor);
 types.setTypeParser(20, (valor) => Number.parseInt(valor, 10));
 
 function cadenaConexionAplicacion(): string {
-  const cadena = process.env.RESERVAGOL_POSTGRES_URL;
-  if (!cadena) throw new Error('Falta RESERVAGOL_POSTGRES_URL.');
+  const cadena =
+    process.env.NODE_ENV === 'production'
+      ? process.env.RESERVAGOL_POSTGRES_URL
+      : process.env.RESERVAGOL_POSTGRES_URL_NON_POOLING ??
+        process.env.RESERVAGOL_POSTGRES_URL;
+  if (!cadena) {
+    throw new Error('Falta configurar la variable de conexión de ReservaGol.');
+  }
 
   const url = new URL(cadena);
   for (const parametro of ['ssl', 'sslmode', 'sslrootcert', 'sslcert', 'sslkey']) {

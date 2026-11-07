@@ -6,7 +6,7 @@
 | P01 | Base de datos | Completado | M1/M2 aplicadas; `db:verificar` sin fallas; build correcto |
 | P02 | Reglas de negocio | Completado | 25 casos del plan y 6 pruebas existentes pasan; build correcto |
 | P03 | Infraestructura del servidor | Completado; configurar credenciales para uso manual | 42 tests, build y smoke checks correctos |
-| P04 | Datos | Pendiente | |
+| P04 | Datos | Completado; fase 4 sigue abierta hasta P05 | Flujo 15/15, demo cargada, 42 tests y build correcto |
 | P05 | API | Pendiente | |
 | P06 | Interfaz base, canchas y clientes | Pendiente | |
 | P07 | Agenda y creación de reservas | Pendiente | |
@@ -50,3 +50,14 @@
 - Smoke en Next dev: `/` y `/reservas` redirigen a `/login`; `GET /api/reservas/sesion` devuelve 401 con `Cache-Control: no-store`.
 - No se leyeron ni escribieron credenciales locales. Para iniciar sesión manualmente hay que configurar `RESERVAGOL_ADMIN_EMAIL`, `RESERVAGOL_ADMIN_PASSWORD` y `RESERVAGOL_SESSION_SECRET` (mínimo 32 caracteres) en `.env.local` y en Vercel. Tests usan variables efímeras.
 - Evidencia completa: `doc/checkpoints/FASE_3_COMPLETADA.md`.
+
+### P04 · 2026-11-07 · Completado (fase 4 abierta)
+
+- Se crearon la fachada `dataService`, tipos y módulos de datos para canchas, clientes, reservas, resúmenes y limpieza.
+- La creación de reserva bloquea la fila de la cancha, verifica entidades activas, bloquea y evalúa las franjas existentes dentro de una transacción. Los abonos se serializan bloqueando su reserva; el estado del pago se deriva de la vista/abonos.
+- Se añadieron `db:limpiar`, `db:demo`, `probar:flujo` y el runner `tsx`. Los scripts acceden a datos solo mediante `dataService` salvo el helper de cierre del pool.
+- Salida de `probar:flujo`: 15 pasos `OK`, 0 fallas; limpieza final de datos Prueba completada.
+- Salida de `db:limpiar --prueba`: 0 abonos, 0 reservas, 0 clientes y 0 canchas eliminados.
+- Salida de `db:demo`: 2 canchas y 3 clientes; una reserva pendiente, una con anticipo (20.000 de 50.000) y una pagada (50.000 de 50.000), en fechas 2026-11-08 a 2026-11-10.
+- `npm.cmd test`: 42 pruebas pasaron. `npm.cmd run build`: exitoso.
+- Fase 4 permanece abierta hasta completar y verificar P05.

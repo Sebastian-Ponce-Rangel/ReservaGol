@@ -8,7 +8,7 @@
 
 ## Stack objetivo
 - Next.js App Router 16 + TypeScript. El servidor y las rutas API son Next; Vitest es para pruebas. Despliegue en Vercel.
-- Postgres de Supabase mediante `pg`; la aplicación usa `RESERVAGOL_POSTGRES_URL` y los scripts administrativos prefieren `RESERVAGOL_POSTGRES_URL_NON_POOLING`. No muestres ni registres valores de entorno.
+- Postgres de Supabase mediante `pg`; producción usa `RESERVAGOL_POSTGRES_URL` y desarrollo/scripts administrativos prefieren `RESERVAGOL_POSTGRES_URL_NON_POOLING` cuando está configurada. No muestres ni registres valores de entorno.
 - Acceso de administrador con `RESERVAGOL_ADMIN_EMAIL`, `RESERVAGOL_ADMIN_PASSWORD` y `RESERVAGOL_SESSION_SECRET`; nunca uses credenciales de demostración en producción.
 - Validación con Zod. Pruebas con Vitest.
 - App y código compartido en `src/`; alias `@/*` apunta a `src/*`.

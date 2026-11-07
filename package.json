@@ -10,7 +10,10 @@
     "lint": "next build",
     "test": "vitest --run",
     "db:migrar": "node --env-file=.env.local scripts/migrar.mjs",
-    "db:verificar": "node --env-file=.env.local scripts/verificar-bd.mjs"
+    "db:verificar": "node --env-file=.env.local scripts/verificar-bd.mjs",
+    "db:limpiar": "node --env-file=.env.local --import tsx scripts/limpiar-prueba.mjs",
+    "db:demo": "node --env-file=.env.local --import tsx scripts/cargar-demo.ts",
+    "probar:flujo": "node --env-file=.env.local --import tsx scripts/probar-flujo.ts"
   },
   "dependencies": {
     "framer-motion": "latest",
@@ -32,6 +35,7 @@
     "eslint-config-next": "latest",
     "jsdom": "latest",
     "prettier": "latest",
+    "tsx": "^4.23.15",
     "typescript": "latest",
     "vitest": "latest"
   }

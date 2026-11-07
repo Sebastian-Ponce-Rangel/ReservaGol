@@ -8,7 +8,7 @@
 | P03 | Infraestructura del servidor | Completado; configurar credenciales para uso manual | 42 tests, build y smoke checks correctos |
 | P04 | Datos | Completado; fase 4 sigue abierta hasta P05 | Flujo 15/15, demo cargada, 42 tests y build correcto |
 | P05 | API | Completado | API autenticada probada; 8 endpoints sin sesión devuelven 401 |
-| P06 | Interfaz base, canchas y clientes | Pendiente | |
+| P06 | Interfaz base, canchas y clientes | Completado; fase 5 sigue abierta | Gestión UI validada; 42 tests y build correcto |
 | P07 | Agenda y creación de reservas | Pendiente | |
 | P08 | Detalle, cobro y aceptación | Pendiente | |
 | P09 | Opcionales | Pendiente | |
@@ -71,3 +71,14 @@
 - `npm.cmd test`: 42 pruebas pasaron. `npm.cmd run build`: exitoso.
 - `npm.cmd run db:verificar`: 0 fallas; 2 canchas, 3 clientes, 3 reservas y 2 abonos demo presentes; restricciones e integridad correctas.
 - Evidencia completa: `doc/checkpoints/FASE_4_COMPLETADA.md`.
+
+### P06 · 2026-11-07 · Completado (fase 5 abierta)
+
+- Se creó el shell autenticado de `/reservas` con navegación Agenda/Canchas/Clientes, correo de sesión y cierre de sesión.
+- Se añadieron componentes UI accesibles y propios: botones, campos, selector, tarjeta, insignia, aviso, diálogo nativo y estado vacío; no se instalaron librerías de componentes.
+- Agenda muestra reservas activas reales. Canchas y Clientes permiten crear, listar, mostrar estados y desactivar sin borrar; la API muestra el error de cancha duplicada.
+- Smoke UI en Next dev: datos Demo visibles; alta de `Prueba P06 Cancha`, duplicado rechazado, desactivación preservada como inactiva; alta/desactivación de cliente; limpieza posterior de datos Prueba.
+- Responsive: a 390 px, `documentWidth` fue 375 px (sin overflow horizontal). Diálogo verificado con foco inicial y Escape.
+- `npm.cmd test`: 42 pruebas pasaron. `npm.cmd run build`: exitoso.
+- La fase 5 continúa abierta hasta completar P07 y P08.
+- Evidencia: `doc/checkpoints/FASE_5_P06_COMPLETADA.md`.

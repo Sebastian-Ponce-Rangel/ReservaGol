@@ -1,20 +1,9 @@
-import pg from 'pg';
+import { crearClientePostgres } from './conexion.mjs';
 
-const { Client } = pg;
-const connectionString = process.env.RESERVAGOL_POSTGRES_URL;
-
-if (!connectionString) {
-  console.error('Falta la variable RESERVAGOL_POSTGRES_URL.');
-  process.exit(1);
-}
-
-const client = new Client({
-  connectionString,
-  ssl: { rejectUnauthorized: false },
-  connectionTimeoutMillis: 10000,
-});
+const client = crearClientePostgres();
 
 let fallas = 0;
+let numeroSavepoint = 0;
 
 function resultado(ok, mensaje) {
   console.log(`${ok ? 'OK' : 'FALLA'} ${mensaje}`);
@@ -22,7 +11,7 @@ function resultado(ok, mensaje) {
 }
 
 async function esperarError(nombre, codigo, restriccion, accion) {
-  const savepoint = `sp_${nombre}`;
+  const savepoint = `sp_esperar_${++numeroSavepoint}`;
   await client.query(`SAVEPOINT ${savepoint}`);
   let error;
 

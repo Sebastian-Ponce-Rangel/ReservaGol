@@ -1,23 +1,11 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import pg from 'pg';
-
-const { Client } = pg;
-const connectionString = process.env.RESERVAGOL_POSTGRES_URL;
-
-if (!connectionString) {
-  console.error('Falta la variable RESERVAGOL_POSTGRES_URL.');
-  process.exit(1);
-}
+import { crearClientePostgres } from './conexion.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const migrationsPath = join(root, 'supabase', 'migrations');
-const client = new Client({
-  connectionString,
-  ssl: { rejectUnauthorized: false },
-  connectionTimeoutMillis: 10000,
-});
+const client = crearClientePostgres();
 
 try {
   await client.connect();

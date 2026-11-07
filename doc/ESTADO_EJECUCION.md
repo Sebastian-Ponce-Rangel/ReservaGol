@@ -3,7 +3,7 @@
 | Prompt | Fase | Estado | Evidencia |
 |---|---|---|---|
 | P00 | Conciliación | Completado | `ESTADO_ACTUAL.md`, `DICTAMEN.md`, instrucciones y checkpoint Fase 0 |
-| P01 | Base de datos | Bloqueado: Postgres inaccesible | Scripts listos; conexión al pooler expira antes de aplicar SQL |
+| P01 | Base de datos | Completado | M1/M2 aplicadas; `db:verificar` sin fallas; build correcto |
 | P02 | Reglas de negocio | Pendiente | |
 | P03 | Infraestructura del servidor | Pendiente | |
 | P04 | Datos | Pendiente | |
@@ -23,11 +23,12 @@
 - Pruebas base: `npm.cmd test` reportó 4 pruebas pasadas y 2 suites fallidas por alias `@/` sin configurar en Vitest. Resolver durante P02.
 - Cambios del prompt: se crearon `doc/ESTADO_ACTUAL.md`, `doc/DICTAMEN.md`, `.github/copilot-instructions.md` y `doc/checkpoints/FASE_0_COMPLETADA.md`.
 
-### P01 · 2026-11-07 · Preparado, bloqueado antes de aplicar
+### P01 · 2026-11-07 · Completado
 
-- `pg` y `@types/pg` instalados desde el registro npm-compatible de Yarn después de confirmar que el registro npm oficial no era accesible.
-- Creados `supabase/migrations/0001_reservagol_tablas.sql`, `0002_reservagol_vista_seguridad.sql`, `scripts/migrar.mjs` y `scripts/verificar-bd.mjs`; agregados `db:migrar` y `db:verificar`.
-- `npm.cmd run build`: exitoso. `node --check` pasó para ambos scripts.
-- La conexión de solo lectura y `npm.cmd run db:migrar` fallan por timeout al alcanzar Postgres. El migrador no llegó a crear `_migrations` ni ejecutó SQL.
-- `npm.cmd run db:verificar`: `FALLA conexión/verificación de base: timeout`; total de fallas: 1. No hubo escrituras en la base.
-- La fase sigue incompleta. Reanudar cuando el entorno pueda alcanzar el Transaction pooler por red; entonces ejecutar migración y verificación antes de P02.
+- `pg` y `@types/pg` instalados desde el registro npm-compatible de Yarn; el registro npm oficial no era accesible desde este entorno.
+- Creados `supabase/migrations/0001_reservagol_tablas.sql`, `0002_reservagol_vista_seguridad.sql`, `scripts/conexion.mjs`, `scripts/migrar.mjs` y `scripts/verificar-bd.mjs`; agregados `db:migrar` y `db:verificar`.
+- Para scripts administrativos se usa `RESERVAGOL_POSTGRES_URL_NON_POOLING` cuando existe. Los dos endpoints se verificaron como el mismo host, usuario, base y contraseña; el de sesión es accesible desde el entorno. Los parámetros SSL de la URL se quitan solo en memoria para respetar `ssl: { rejectUnauthorized: false }`. La aplicación usará `RESERVAGOL_POSTGRES_URL` (pooler transaccional).
+- `npm.cmd run db:migrar`: aplicadas `0001_reservagol_tablas.sql` y `0002_reservagol_vista_seguridad.sql`.
+- `npm.cmd run db:verificar`: 0 fallas. El test de integridad corre dentro de una transacción que termina en `ROLLBACK`; conteos observados: 0 filas en las cuatro tablas.
+- `npm.cmd run build`: exitoso. `node --check` pasó para los dos scripts.
+- Evidencia completa: `doc/checkpoints/FASE_1_COMPLETADA.md`.

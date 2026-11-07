@@ -4,7 +4,7 @@
 |---|---|---|---|
 | P00 | Conciliación | Completado | `ESTADO_ACTUAL.md`, `DICTAMEN.md`, instrucciones y checkpoint Fase 0 |
 | P01 | Base de datos | Completado | M1/M2 aplicadas; `db:verificar` sin fallas; build correcto |
-| P02 | Reglas de negocio | Pendiente | |
+| P02 | Reglas de negocio | Completado | 25 casos del plan y 6 pruebas existentes pasan; build correcto |
 | P03 | Infraestructura del servidor | Pendiente | |
 | P04 | Datos | Pendiente | |
 | P05 | API | Pendiente | |
@@ -32,3 +32,11 @@
 - `npm.cmd run db:verificar`: 0 fallas. El test de integridad corre dentro de una transacción que termina en `ROLLBACK`; conteos observados: 0 filas en las cuatro tablas.
 - `npm.cmd run build`: exitoso. `node --check` pasó para los dos scripts.
 - Evidencia completa: `doc/checkpoints/FASE_1_COMPLETADA.md`.
+
+### P02 · 2026-11-07 · Completado
+
+- Se configuraron en Vitest los alias `@/` y `@data/`, resolviendo las dos suites que fallaban en la línea base.
+- Se crearon la configuración del dominio y las reglas puras de errores, fechas, horario, reserva, pago y cliente, con 25 casos T-01 a T-25.
+- `npm.cmd test`: 31 pruebas pasaron (25 nuevas y 6 preexistentes).
+- `npm.cmd run build`: exitoso; compilación, tipos y páginas estáticas correctos.
+- Evidencia completa: `doc/checkpoints/FASE_2_COMPLETADA.md`.

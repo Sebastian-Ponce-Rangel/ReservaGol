@@ -7,7 +7,7 @@
 | P02 | Reglas de negocio | Completado | 25 casos del plan y 6 pruebas existentes pasan; build correcto |
 | P03 | Infraestructura del servidor | Completado; configurar credenciales para uso manual | 42 tests, build y smoke checks correctos |
 | P04 | Datos | Completado; fase 4 sigue abierta hasta P05 | Flujo 15/15, demo cargada, 42 tests y build correcto |
-| P05 | API | Pendiente | |
+| P05 | API | Completado | API autenticada probada; 8 endpoints sin sesión devuelven 401 |
 | P06 | Interfaz base, canchas y clientes | Pendiente | |
 | P07 | Agenda y creación de reservas | Pendiente | |
 | P08 | Detalle, cobro y aceptación | Pendiente | |
@@ -61,3 +61,13 @@
 - Salida de `db:demo`: 2 canchas y 3 clientes; una reserva pendiente, una con anticipo (20.000 de 50.000) y una pagada (50.000 de 50.000), en fechas 2026-11-08 a 2026-11-10.
 - `npm.cmd test`: 42 pruebas pasaron. `npm.cmd run build`: exitoso.
 - Fase 4 permanece abierta hasta completar y verificar P05.
+
+### P05 · 2026-11-07 · Completado (fase 4 cerrada)
+
+- Se crearon las rutas protegidas de canchas, clientes, reservas, disponibilidad, detalle, cancelación y abonos. Cada handler exige sesión primero; rutas dinámicas esperan `params`.
+- Smoke autenticado con credenciales efímeras: login/sesión OK; POST de cancha, cliente y reserva devolvieron 201; solape devolvió 409 `CHOQUE_HORARIO`; abono parcial devolvió 201 (`anticipo`, saldo 30000); abono excesivo devolvió 409 `ABONO_EXCEDE_TOTAL`; cancelación devolvió 200 y la franja se pudo reservar de nuevo (201).
+- Tras logout, las ocho rutas probadas de `/api/reservas/*` devolvieron 401 JSON con `Cache-Control: no-store`.
+- Los datos `Prueba API` se limpiaron; los registros `Demo` se conservaron.
+- `npm.cmd test`: 42 pruebas pasaron. `npm.cmd run build`: exitoso.
+- `npm.cmd run db:verificar`: 0 fallas; 2 canchas, 3 clientes, 3 reservas y 2 abonos demo presentes; restricciones e integridad correctas.
+- Evidencia completa: `doc/checkpoints/FASE_4_COMPLETADA.md`.

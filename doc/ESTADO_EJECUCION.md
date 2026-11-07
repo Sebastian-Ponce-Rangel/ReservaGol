@@ -9,7 +9,7 @@
 | P04 | Datos | Completado; fase 4 sigue abierta hasta P05 | Flujo 15/15, demo cargada, 42 tests y build correcto |
 | P05 | API | Completado | API autenticada probada; 8 endpoints sin sesión devuelven 401 |
 | P06 | Interfaz base, canchas y clientes | Completado; fase 5 sigue abierta | Gestión UI validada; 42 tests y build correcto |
-| P07 | Agenda y creación de reservas | Pendiente | |
+| P07 | Agenda y creación de reservas | Completado; fase 5 sigue abierta | Agenda y formulario probados; 42 tests y build correcto |
 | P08 | Detalle, cobro y aceptación | Pendiente | |
 | P09 | Opcionales | Pendiente | |
 
@@ -82,3 +82,13 @@
 - `npm.cmd test`: 42 pruebas pasaron. `npm.cmd run build`: exitoso.
 - La fase 5 continúa abierta hasta completar P07 y P08.
 - Evidencia: `doc/checkpoints/FASE_5_P06_COMPLETADA.md`.
+
+### P07 · 2026-11-07 · Completado (fase 5 abierta)
+
+- La Agenda filtra por cancha y fecha, muestra reservas activas con cliente/horario/estado de pago y calcula los huecos libres entre 06:00 y 23:00.
+- El formulario crea reservas por API y valida fecha no pasada, fin posterior al inicio y valor entero positivo. Los choques parciales muestran cancha y franja en conflicto.
+- Smoke con datos `Prueba P07`: 18:00–19:00 creada; 18:30–19:30 rechazada con el mensaje esperado; 19:00–20:00 creada. Fixture limpiado después.
+- `npm.cmd test`: 42 pruebas pasaron. `npm.cmd run build`: exitoso.
+- Responsive verificado a 390 px: sin overflow horizontal.
+- La fase 5 sigue abierta hasta P08.
+- Evidencia: `doc/checkpoints/FASE_5_P07_COMPLETADA.md`.

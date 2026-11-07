@@ -158,7 +158,12 @@ export async function crearReserva(datos: DatosReserva): Promise<Reserva> {
 
       for (const franja of activas.rows) {
         if (haySolape(datos.horaInicio, datos.horaFin, franja.horaInicio, franja.horaFin)) {
-          throw new ErrorDeNegocio('CHOQUE_HORARIO');
+          throw new ErrorDeNegocio('CHOQUE_HORARIO', undefined, {
+            conflicto: {
+              horaInicio: franja.horaInicio,
+              horaFin: franja.horaFin,
+            },
+          });
         }
       }
 

@@ -3,7 +3,7 @@ import { useId, type InputHTMLAttributes } from 'react';
 type CampoProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'id'> & {
   id?: string;
   etiqueta: string;
-  error?: string;
+  error?: string | undefined;
 };
 
 export function Campo({ id, etiqueta, error, className = '', ...props }: CampoProps) {

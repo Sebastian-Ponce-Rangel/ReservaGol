@@ -17,26 +17,31 @@ const FECHAS = ['2026-11-12', '2026-11-13', '2026-11-14', '2026-11-15', '2026-11
 describe('AgendaCliente', () => {
   beforeEach(() => {
     refresh.mockClear();
-    fetchMock.mockReset().mockImplementation(async (url: string) => ({
-      ok: true,
-      json: async () => String(url).includes('?desde=')
+    fetchMock.mockReset().mockImplementation(async (url: string) => {
+      const resultado = String(url).includes('?desde=')
         ? {
-          ok: true,
-          datos: {
-            ocupadas: [{
-              canchaId: CANCHA.id,
-              fecha: '2026-11-12',
-              horaInicio: '06:00',
-              horaFin: '07:00',
-            }],
-          },
-        }
-        : { ok: true, datos: { id: 'reserva-1', valorTotal: 60000, anticipoRequerido: 15000 } },
-    }));
+            ok: true,
+            datos: {
+              ocupadas: [{
+                canchaId: CANCHA.id,
+                fecha: '2026-11-12',
+                horaInicio: '06:00',
+                horaFin: '07:00',
+              }],
+            },
+          }
+        : { ok: true, datos: { id: 'reserva-1', valorTotal: 60000, anticipoRequerido: 15000 } };
+      return {
+        ok: true,
+        json: async () => resultado,
+        text: async () => JSON.stringify(resultado),
+      };
+    });
     vi.stubGlobal('fetch', fetchMock);
   });
   afterEach(() => {
     vi.useRealTimers();
+    vi.restoreAllMocks();
     vi.unstubAllGlobals();
   });
 
@@ -58,6 +63,35 @@ describe('AgendaCliente', () => {
     expect(screen.getByRole('heading', { name: 'No hay canchas disponibles' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /06:00 libre/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Tu reserva' })).not.toBeInTheDocument();
+  });
+
+  it('muestra y registra la respuesta del servidor cuando rechaza una reserva', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const textoError = JSON.stringify({
+      ok: false,
+      error: { codigo: 'CHOQUE_HORARIO', mensaje: 'La franja ya está ocupada.' },
+    });
+    fetchMock.mockImplementationOnce(async () => ({
+      ok: false,
+      status: 409,
+      text: async () => textoError,
+    }));
+
+    render(<AgendaCliente canchas={[CANCHA]} ocupadas={[]} fechas={FECHAS} hoy="2026-11-12" canchaInicial={CANCHA.id} />);
+    fireEvent.click(screen.getAllByRole('button', { name: /06:00 libre/i })[0]!);
+    fireEvent.change(screen.getByLabelText('Nombre completo'), { target: { value: 'Ana Prueba' } });
+    fireEvent.change(screen.getByLabelText('WhatsApp'), { target: { value: '3001234567' } });
+    fireEvent.change(screen.getByLabelText('Correo electrónico'), { target: { value: 'ana@example.com' } });
+    fireEvent.click(screen.getByLabelText(/acepto el tratamiento/i));
+    fireEvent.click(screen.getByRole('button', { name: 'Solicitar reserva' }));
+
+    expect(await screen.findByText('La franja ya está ocupada.')).toBeInTheDocument();
+    expect(errorSpy).toHaveBeenCalledWith('El servidor rechazó la reserva.', {
+      status: 409,
+      codigo: 'CHOQUE_HORARIO',
+      textoError,
+    });
+    errorSpy.mockRestore();
   });
 
   it('calcula tarifa base y anticipo, habilita CTA y envía sin precio manual', async () => {

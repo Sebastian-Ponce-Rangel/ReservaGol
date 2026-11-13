@@ -17,6 +17,7 @@
 | P12 | Reservas en contaduría y retiro de datos simulados | Completado | `FASE_9_COMPLETADA.md`; panel enlazado a `v_reservas`, datos Demo/Prueba retirados, 77 pruebas y build correctos |
 | P13 | Visibilidad de reservas recientes y diagnóstico del formulario | Completado con prerrequisito operativo | `FASE_9_COMPLETADA.md`; listado sin filtro por mes, errores registrados sin datos personales; BD verificada sin canchas ni reservas reales |
 | P14 | Restaurar panel de agenda sin canchas configuradas | Completado con prerrequisito operativo | `FASE_9_COMPLETADA.md`; clic abre formulario, confirmación bloquea franja; estado vacío claro cuando no hay canchas; 80 pruebas y build correctos |
+| P15 | Diagnóstico de respuestas rechazadas por API pública | Completado; diagnóstico real pendiente de nuevo intento | `FASE_9_COMPLETADA.md`; cuerpo de error visible en consola de desarrollo, permisos/RLS verificados, 81 pruebas y build correctos |
 
 ## Bitácora
 
@@ -162,4 +163,14 @@
 - Se añadieron pruebas para apertura del panel, cierre tras guardar y vista sin canchas. El flujo de persistencia sigue llamando la API de servidor, que inserta en una transacción PostgreSQL; no se expone el cliente Supabase en el navegador.
 - `npm.cmd test`: 80 pruebas pasaron en 22 archivos. `npm.cmd run build`: exitoso.
 - La BD sigue sin canchas activas ni reservas, por lo que la prueba de extremo a extremo con datos reales queda bloqueada hasta registrar una cancha real.
+- Evidencia: `doc/checkpoints/FASE_9_COMPLETADA.md`.
+
+### P15 · 2026-11-13 · Completado; diagnóstico real pendiente de nuevo intento
+
+- Problems no muestra errores de TypeScript o editor. No había una sesión de servidor Next.js adjunta a esta conversación para leer su terminal.
+- Se verificaron ambas conexiones configuradas sin revelar sus cadenas: ambas tienen permiso `INSERT` en `reservas` y usan un rol que omite RLS. `db:verificar` pasó con 0 fallas; existe 1 cancha activa y 0 reservas. No corresponde agregar políticas RLS públicas.
+- El body del formulario ya cumple `esquemaReservaPublica` (`canchaId`, `clienteNuevo`, `fecha`, `horaInicio`, `horaFin`, método y consentimiento). No envía precio por diseño: el backend calcula el total desde la tarifa guardada para evitar manipulación.
+- `AgendaCliente` ahora lee una sola vez el body con `response.text()`, registra el texto completo solo en desarrollo y presenta el mensaje/código del backend. Producción registra únicamente estado y código de error.
+- No se reprodujo el POST real para evitar crear una reserva de prueba persistente. El mensaje “El servidor rechazó la reserva” no incluye el cuerpo de respuesta; el código exacto se conocerá al reintentar con el nuevo diagnóstico.
+- `npm.cmd test`: 81 pruebas pasaron en 22 archivos. `npm.cmd run build`: exitoso.
 - Evidencia: `doc/checkpoints/FASE_9_COMPLETADA.md`.

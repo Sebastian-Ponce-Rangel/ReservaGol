@@ -141,14 +141,30 @@ export function AgendaCliente({ canchas, ocupadas, fechas, hoy, canchaInicial }:
           politicasAceptadas: true,
         }),
       });
-      const resultado = await response.json() as {
+      const textoRespuesta = await response.text();
+      let resultado: {
         datos?: { valorTotal?: unknown; anticipoRequerido?: unknown };
         error?: { codigo?: string; mensaje?: string };
       };
+      try {
+        resultado = JSON.parse(textoRespuesta) as typeof resultado;
+      } catch {
+        console.error('El servidor devolvió una respuesta no válida.', {
+          status: response.status,
+          ...(process.env.NODE_ENV === 'production' ? {} : { textoError: textoRespuesta }),
+        });
+        if (!response.ok) {
+          setAviso({ tipo: 'error', texto: 'El servidor no pudo completar la reserva. Revisa los registros para ver el detalle.' });
+          router.refresh();
+          return;
+        }
+        throw new Error('La respuesta del servidor no contiene JSON válido.');
+      }
       if (!response.ok) {
         console.error('El servidor rechazó la reserva.', {
           status: response.status,
           codigo: resultado.error?.codigo,
+          ...(process.env.NODE_ENV === 'production' ? {} : { textoError: textoRespuesta }),
         });
         setAviso({ tipo: 'error', texto: resultado.error?.mensaje ?? 'No se pudo completar la reserva.' });
         router.refresh();

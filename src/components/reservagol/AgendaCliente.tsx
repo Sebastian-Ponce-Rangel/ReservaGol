@@ -87,8 +87,11 @@ export function AgendaCliente({ canchas, ocupadas, fechas, hoy, canchaInicial }:
       }
       setBloquesOcupados(resultado.datos.ocupadas);
       setErrorDisponibilidad(false);
-    } catch {
-      if (!signal?.aborted) setErrorDisponibilidad(true);
+    } catch (error) {
+      if (!signal?.aborted) {
+        console.error('No se pudo consultar la disponibilidad pública.', error);
+        setErrorDisponibilidad(true);
+      }
     }
   }, [finRango, inicioRango]);
 
@@ -124,13 +127,30 @@ export function AgendaCliente({ canchas, ocupadas, fechas, hoy, canchaInicial }:
           politicasAceptadas: true,
         }),
       });
-      const resultado = await response.json();
+      const resultado = await response.json() as {
+        datos?: { valorTotal?: unknown; anticipoRequerido?: unknown };
+        error?: { codigo?: string; mensaje?: string };
+      };
       if (!response.ok) {
+        console.error('El servidor rechazó la reserva.', {
+          status: response.status,
+          codigo: resultado.error?.codigo,
+        });
         setAviso({ tipo: 'error', texto: resultado.error?.mensaje ?? 'No se pudo completar la reserva.' });
         router.refresh();
         return;
       }
-      setConfirmacion({ total: resultado.datos.valorTotal, anticipo: resultado.datos.anticipoRequerido });
+      const valorTotal = resultado.datos?.valorTotal;
+      const anticipoRequerido = resultado.datos?.anticipoRequerido;
+      if (
+        typeof valorTotal !== 'number' ||
+        !Number.isSafeInteger(valorTotal) ||
+        typeof anticipoRequerido !== 'number' ||
+        !Number.isSafeInteger(anticipoRequerido)
+      ) {
+        throw new Error('Respuesta inválida al confirmar la reserva.');
+      }
+      setConfirmacion({ total: valorTotal, anticipo: anticipoRequerido });
       setBloquesOcupados((actuales) => [
         ...actuales,
         {
@@ -144,7 +164,8 @@ export function AgendaCliente({ canchas, ocupadas, fechas, hoy, canchaInicial }:
       setAviso({ tipo: 'exito', texto: 'Recibimos tu solicitud de reserva.' });
       void actualizarDisponibilidad();
       router.refresh();
-    } catch {
+    } catch (error) {
+      console.error('No se pudo completar la solicitud de reserva.', error);
       setAviso({ tipo: 'error', texto: 'No fue posible conectar con el servidor.' });
     } finally {
       setGuardando(false);

@@ -75,7 +75,7 @@ export default async function AdminPage({ searchParams }: Props) {
         <div className="seccion-cabecera">
           <div>
             <p className="seccion-kicker">Registro</p>
-            <h2 id="admin-reservas-titulo">Reservas del período</h2>
+            <h2 id="admin-reservas-titulo">Reservas recientes</h2>
           </div>
           <Link className="admin-enlace" href="/reservas/clientes">Ver clientes</Link>
         </div>
@@ -113,7 +113,7 @@ export default async function AdminPage({ searchParams }: Props) {
                 </tr>
               ))}
               {resumen.reservas.length === 0 && (
-                <tr><td colSpan={11}>No hay reservas en el período seleccionado.</td></tr>
+                <tr><td colSpan={11}>No hay reservas registradas.</td></tr>
               )}
             </tbody>
           </table>

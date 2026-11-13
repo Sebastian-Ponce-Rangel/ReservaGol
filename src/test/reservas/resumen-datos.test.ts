@@ -95,7 +95,9 @@ describe('resúmenes de reservas', () => {
     expect(consultar.mock.calls[0]?.[0]).toContain('FROM v_reservas');
     expect(consultar.mock.calls[0]?.[1]).toEqual(['2026-11-01', '2026-11-30']);
     expect(consultar.mock.calls[2]?.[0]).toContain('JOIN clientes c');
-    expect(consultar.mock.calls[2]?.[1]).toEqual(['2026-11-01', '2026-11-30', 10]);
+    expect(consultar.mock.calls[2]?.[0]).not.toContain('r.fecha BETWEEN');
+    expect(consultar.mock.calls[2]?.[0]).not.toContain('LIMIT');
+    expect(consultar.mock.calls[2]?.[1]).toEqual([]);
     expect(resumen).toEqual({
       desde: '2026-11-01',
       hasta: '2026-11-30',

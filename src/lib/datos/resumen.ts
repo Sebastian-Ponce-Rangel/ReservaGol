@@ -9,8 +9,6 @@ import type {
   ReservaResumenAdministrador,
 } from './tipos';
 
-const LIMITE_RESERVAS_PANEL = 10;
-
 export async function agendaDelDia(fecha: string): Promise<AgendaDia> {
   const [canchas, reservas] = await Promise.all([
     listarCanchas({ incluirInactivas: true }),
@@ -132,10 +130,8 @@ export async function resumenAdministrador(
               r.estado
        FROM v_reservas r
        JOIN clientes c ON c.id = r.cliente_id
-       WHERE r.fecha BETWEEN $1 AND $2
-       ORDER BY r.created_at DESC, r.id DESC
-       LIMIT $3`,
-      [desde, hasta, LIMITE_RESERVAS_PANEL],
+       ORDER BY r.created_at DESC, r.id DESC`,
+      [],
     ),
   ]);
   const fila = totales[0];

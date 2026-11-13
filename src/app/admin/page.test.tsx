@@ -58,11 +58,44 @@ describe('AdminPage', () => {
 
     render(await AdminPage({ searchParams: Promise.resolve({ desde: '2026-11-01', hasta: '2026-11-30' }) }));
 
-    expect(screen.getByRole('heading', { name: 'Reservas del período' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Reservas recientes' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Ana Pérez' })).toHaveAttribute('href', '/reservas/reserva-1');
     expect(screen.getByText('3001234567')).toBeInTheDocument();
     expect(screen.getByText('ana@example.com')).toBeInTheDocument();
     expect(screen.getByText('09:00–10:00')).toBeInTheDocument();
     expect(screen.getAllByText(/25\.000/)).toHaveLength(3);
+  });
+
+  it('muestra reservas recientes aunque pertenezcan a un mes distinto al filtro contable', async () => {
+    resumenAdministrador.mockResolvedValue({
+      desde: '2026-11-01',
+      hasta: '2026-11-30',
+      totalAlquileres: 0,
+      alquileresActivos: 0,
+      ingresos: 0,
+      canchasAlquiladas: 0,
+      reservas: [{
+        id: 'reserva-diciembre',
+        clienteNombre: 'Carlos Ruiz',
+        clienteContacto: '3001234567',
+        clienteEmail: null,
+        canchaNombre: 'Cancha Norte',
+        fecha: '2026-12-01',
+        horaInicio: '09:00',
+        horaFin: '10:00',
+        valorTotal: 60000,
+        anticipoRequerido: 15000,
+        abonado: 0,
+        saldo: 60000,
+        estado: 'activa',
+        estadoPago: 'pendiente',
+      }],
+      porCancha: [],
+    });
+
+    render(await AdminPage({ searchParams: Promise.resolve({ desde: '2026-11-01', hasta: '2026-11-30' }) }));
+
+    expect(screen.getByRole('link', { name: 'Carlos Ruiz' })).toHaveAttribute('href', '/reservas/reserva-diciembre');
+    expect(screen.getByText('1 de diciembre de 2026')).toBeInTheDocument();
   });
 });

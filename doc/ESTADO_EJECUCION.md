@@ -15,6 +15,7 @@
 | P10 | Disponibilidad, navegación e identidad visual | Completado | `FASE_8_COMPLETADA.md`; actualización pública cada 5 s; 73 pruebas y build correctos |
 | P11 | Sincronización de agenda y contaduría | Completado | `FASE_9_COMPLETADA.md`; 77 pruebas, build y consultas de BD correctos |
 | P12 | Reservas en contaduría y retiro de datos simulados | Completado | `FASE_9_COMPLETADA.md`; panel enlazado a `v_reservas`, datos Demo/Prueba retirados, 77 pruebas y build correctos |
+| P13 | Visibilidad de reservas recientes y diagnóstico del formulario | Completado con prerrequisito operativo | `FASE_9_COMPLETADA.md`; listado sin filtro por mes, errores registrados sin datos personales; BD verificada sin canchas ni reservas reales |
 
 ## Bitácora
 
@@ -143,4 +144,12 @@
 - Por solicitud de eliminar datos de prueba, `db:limpiar` retiró 2 abonos, 3 reservas, 3 clientes y 2 canchas con prefijos Demo/Prueba. La base configurada quedó sin registros de dominio; el panel refleja correctamente el estado vacío hasta que se creen reservas reales.
 - `npm.cmd run db:verificar`: 0 fallas. Consulta del panel contra la BD después de la limpieza: 0 reservas y $0 en abonos, coincidente con las tablas vacías.
 - `npm.cmd test`: 77 pruebas pasaron en 22 archivos. `npm.cmd run build`: exitoso.
+- Evidencia: `doc/checkpoints/FASE_9_COMPLETADA.md`.
+
+### P13 · 2026-11-13 · Completado con prerrequisito operativo
+
+- Contaduría separa las métricas por período de la tabla de reservas recientes. La tabla consulta todas las reservas persistidas, ordenadas por creación, sin limitarse al mes seleccionado ni truncarlas a diez filas.
+- El formulario registra errores de red, respuestas inválidas y rechazos del servidor en consola sin incluir datos personales; tras una creación exitosa sigue marcando la franja como ocupada inmediatamente y consulta de nuevo la disponibilidad.
+- La lectura de solo consulta a la base configurada confirmó 0 canchas activas y 0 reservas. Sin una cancha real configurada no se puede completar una reserva ni verificar un recorrido real cliente→agenda→Contaduría; no se insertaron datos simulados.
+- `npm.cmd test`: 78 pruebas pasaron en 22 archivos. `npm.cmd run build`: exitoso.
 - Evidencia: `doc/checkpoints/FASE_9_COMPLETADA.md`.

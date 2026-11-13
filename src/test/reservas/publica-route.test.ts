@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { GET, POST } from '@/app/api/reservas/publica/route';
 
 const { crearReservaPublica, listarBloquesOcupadosPublicos, listarCanchas } = vi.hoisted(() => ({
@@ -18,6 +18,10 @@ describe('API pública de reservas', () => {
     ]);
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('entrega disponibilidad sin datos de clientes y limita el rango a siete días', async () => {
     const response = await GET(new Request('http://localhost/api/reservas/publica?desde=2026-11-20&hasta=2026-11-26'));
     const body = await response.json();
@@ -34,6 +38,7 @@ describe('API pública de reservas', () => {
   });
 
   it('crea una reserva pública con total calculado en servidor y sin revelar datos personales', async () => {
+    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     const response = await POST(new Request('http://localhost/api/reservas/publica', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Origin: 'http://localhost' },
@@ -50,6 +55,48 @@ describe('API pública de reservas', () => {
     expect(body.datos).toEqual({ id: 'reserva-1', valorTotal: 50000, anticipoRequerido: 12500, estadoPago: 'pendiente' });
     expect(JSON.stringify(body)).not.toContain('cliente@example.com');
     expect(crearReservaPublica).toHaveBeenCalledWith(expect.objectContaining({ horaInicio: '18:00' }));
+    expect(logSpy).toHaveBeenCalledWith(
+      '[POST /api/reservas/publica] cuerpo recibido (valores personales omitidos)',
+      expect.objectContaining({
+        campos: expect.arrayContaining(['canchaId', 'clienteNuevo', 'fecha', 'horaInicio', 'horaFin']),
+        camposCliente: ['nombre', 'contacto', 'email'],
+        fecha: '2026-11-20',
+        horaInicio: '18:00',
+        horaFin: '19:00',
+      }),
+    );
+    expect(JSON.stringify(logSpy.mock.calls)).not.toContain('Cliente Público');
+    expect(JSON.stringify(logSpy.mock.calls)).not.toContain('3001234567');
+    expect(JSON.stringify(logSpy.mock.calls)).not.toContain('cliente@example.com');
+  });
+
+  it('registra metadatos de PostgreSQL si falla la persistencia', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const error = Object.assign(new Error('column missing'), {
+      code: '42703',
+      column: 'email',
+      table: 'clientes',
+    });
+    crearReservaPublica.mockRejectedValueOnce(error);
+
+    const response = await POST(new Request('http://localhost/api/reservas/publica', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Origin: 'http://localhost' },
+      body: JSON.stringify({
+        canchaId: '98b5f05a-7f6d-4c35-96a1-e338d770c09a',
+        clienteNuevo: { nombre: 'Cliente Público', contacto: '3001234567', email: 'cliente@example.com' },
+        fecha: '2026-11-20', horaInicio: '18:00', horaFin: '19:00',
+        metodoAnticipo: 'transferencia', politicasAceptadas: true,
+      }),
+    }));
+
+    expect(response.status).toBe(500);
+    expect(errorSpy).toHaveBeenCalledWith('[POST /api/reservas/publica] error PostgreSQL', expect.objectContaining({
+      codigo: '42703',
+      tabla: 'clientes',
+      columna: 'email',
+      error,
+    }));
   });
 
   it('rechaza origen cruzado', async () => {

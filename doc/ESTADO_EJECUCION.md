@@ -18,6 +18,7 @@
 | P13 | Visibilidad de reservas recientes y diagnóstico del formulario | Completado con prerrequisito operativo | `FASE_9_COMPLETADA.md`; listado sin filtro por mes, errores registrados sin datos personales; BD verificada sin canchas ni reservas reales |
 | P14 | Restaurar panel de agenda sin canchas configuradas | Completado con prerrequisito operativo | `FASE_9_COMPLETADA.md`; clic abre formulario, confirmación bloquea franja; estado vacío claro cuando no hay canchas; 80 pruebas y build correctos |
 | P15 | Diagnóstico de respuestas rechazadas por API pública | Completado; diagnóstico real pendiente de nuevo intento | `FASE_9_COMPLETADA.md`; cuerpo de error visible en consola de desarrollo, permisos/RLS verificados, 81 pruebas y build correctos |
+| P16 | Diagnóstico servidor y conciliación de campos del POST | Completado; error de ejecución original aún no recibido | `FASE_9_COMPLETADA.md`; log de forma de body con PII redactada, errores PostgreSQL detallados en desarrollo, 82 pruebas y build correctos |
 
 ## Bitácora
 
@@ -173,4 +174,13 @@
 - `AgendaCliente` ahora lee una sola vez el body con `response.text()`, registra el texto completo solo en desarrollo y presenta el mensaje/código del backend. Producción registra únicamente estado y código de error.
 - No se reprodujo el POST real para evitar crear una reserva de prueba persistente. El mensaje “El servidor rechazó la reserva” no incluye el cuerpo de respuesta; el código exacto se conocerá al reintentar con el nuevo diagnóstico.
 - `npm.cmd test`: 81 pruebas pasaron en 22 archivos. `npm.cmd run build`: exitoso.
+- Evidencia: `doc/checkpoints/FASE_9_COMPLETADA.md`.
+
+### P16 · 2026-11-13 · Completado; error de ejecución original aún no recibido
+
+- La inspección de la base confirma `clientes.nombre`, `clientes.contacto`, `clientes.email` y las columnas requeridas de `reservas`, además de `metodo_anticipo` y `privacidad_aceptada_en`. La inserción actual suministra todos los campos obligatorios; el backend deriva `cliente_id` y calcula `valor_total`.
+- `/api/reservas/publica` registra en desarrollo los nombres y tipos de campos recibidos, fecha y horas; los valores de nombre, teléfono y correo quedan redactados. Si PostgreSQL rechaza la transacción, el servidor registra código, restricción, tabla y columna; en desarrollo incluye también el objeto de error.
+- Las comprobaciones anteriores de ambas conexiones muestran permiso INSERT y rol que omite RLS. No se añadieron políticas públicas ni se cambió el esquema o el body.
+- `npm.cmd test`: 82 pruebas pasaron en 22 archivos. `npm.cmd run build`: exitoso.
+- El mensaje exacto de la ejecución del usuario no está disponible todavía; el nuevo log permitirá identificarlo en el próximo intento sin registrar PII.
 - Evidencia: `doc/checkpoints/FASE_9_COMPLETADA.md`.

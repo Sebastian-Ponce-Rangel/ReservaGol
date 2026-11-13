@@ -7,6 +7,31 @@ import { ErrorDeNegocio } from '@/lib/reglas/errores';
 
 export const dynamic = 'force-dynamic';
 
+function esObjeto(valor: unknown): valor is Record<string, unknown> {
+  return typeof valor === 'object' && valor !== null && !Array.isArray(valor);
+}
+
+function diagnosticarCuerpo(cuerpo: unknown) {
+  if (!esObjeto(cuerpo)) return { tipo: Array.isArray(cuerpo) ? 'arreglo' : typeof cuerpo };
+  const cliente = esObjeto(cuerpo.clienteNuevo) ? cuerpo.clienteNuevo : null;
+
+  return {
+    campos: Object.keys(cuerpo),
+    camposCliente: cliente ? Object.keys(cliente) : [],
+    tipoCanchaId: typeof cuerpo.canchaId,
+    fecha: typeof cuerpo.fecha === 'string' ? cuerpo.fecha : null,
+    horaInicio: typeof cuerpo.horaInicio === 'string' ? cuerpo.horaInicio : null,
+    horaFin: typeof cuerpo.horaFin === 'string' ? cuerpo.horaFin : null,
+  };
+}
+
+type ErrorPostgres = Error & {
+  code?: string;
+  constraint?: string;
+  table?: string;
+  column?: string;
+};
+
 export const GET = conManejoDeErrores(async (request: Request) => {
   const parametros = new URL(request.url).searchParams;
   const desde = parametros.get('desde') ?? '';
@@ -33,8 +58,33 @@ export const POST = conManejoDeErrores(async (request: Request) => {
     );
   }
 
+  if (process.env.NODE_ENV !== 'production') {
+    let cuerpoRecibido: unknown;
+    try {
+      cuerpoRecibido = await request.clone().json();
+    } catch (error) {
+      console.warn('No se pudo interpretar el cuerpo JSON de la reserva pública.', error);
+    }
+    console.log('[POST /api/reservas/publica] cuerpo recibido (valores personales omitidos)', diagnosticarCuerpo(cuerpoRecibido));
+  }
+
   const datos = await leerCuerpo(request, esquemaReservaPublica);
-  const reserva = await crearReservaPublica(datos);
+  let reserva: Awaited<ReturnType<typeof crearReservaPublica>>;
+  try {
+    reserva = await crearReservaPublica(datos);
+  } catch (error) {
+    const errorPostgres = error instanceof Error ? error as ErrorPostgres : null;
+    if (errorPostgres?.code) {
+      console.error('[POST /api/reservas/publica] error PostgreSQL', {
+        codigo: errorPostgres.code,
+        restriccion: errorPostgres.constraint,
+        tabla: errorPostgres.table,
+        columna: errorPostgres.column,
+        ...(process.env.NODE_ENV === 'production' ? {} : { error: errorPostgres }),
+      });
+    }
+    throw error;
+  }
   return responderOk({
     id: reserva.id,
     valorTotal: reserva.valorTotal,

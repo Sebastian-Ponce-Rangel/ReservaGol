@@ -76,6 +76,7 @@ describe('API pública de reservas', () => {
       code: '42703',
       column: 'email',
       table: 'clientes',
+      detail: 'sensitive row value',
     });
     crearReservaPublica.mockRejectedValueOnce(error);
 
@@ -91,12 +92,18 @@ describe('API pública de reservas', () => {
     }));
 
     expect(response.status).toBe(500);
-    expect(errorSpy).toHaveBeenCalledWith('[POST /api/reservas/publica] error PostgreSQL', expect.objectContaining({
+    const body = await response.json();
+    const registro = errorSpy.mock.calls.find(([etiqueta]) => etiqueta === 'DETALLE ERROR SUPABASE:')?.[1];
+    expect(typeof registro).toBe('string');
+    const detalle = JSON.parse(String(registro));
+    expect(detalle).toMatchObject({
       codigo: '42703',
       tabla: 'clientes',
       columna: 'email',
-      error,
-    }));
+      mensaje: 'column missing',
+    });
+    expect(JSON.stringify(detalle)).not.toContain('sensitive row value');
+    expect(body.error.mensaje).not.toContain('column missing');
   });
 
   it('rechaza origen cruzado', async () => {

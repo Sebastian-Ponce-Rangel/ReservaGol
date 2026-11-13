@@ -27,9 +27,14 @@ function diagnosticarCuerpo(cuerpo: unknown) {
 
 type ErrorPostgres = Error & {
   code?: string;
+  severity?: string;
+  schema?: string;
   constraint?: string;
   table?: string;
   column?: string;
+  hint?: string;
+  position?: string;
+  routine?: string;
 };
 
 export const GET = conManejoDeErrores(async (request: Request) => {
@@ -75,13 +80,24 @@ export const POST = conManejoDeErrores(async (request: Request) => {
   } catch (error) {
     const errorPostgres = error instanceof Error ? error as ErrorPostgres : null;
     if (errorPostgres?.code) {
-      console.error('[POST /api/reservas/publica] error PostgreSQL', {
+      const detalleError = {
         codigo: errorPostgres.code,
-        restriccion: errorPostgres.constraint,
+        severidad: errorPostgres.severity,
+        esquema: errorPostgres.schema,
         tabla: errorPostgres.table,
         columna: errorPostgres.column,
-        ...(process.env.NODE_ENV === 'production' ? {} : { error: errorPostgres }),
-      });
+        restriccion: errorPostgres.constraint,
+        ...(process.env.NODE_ENV === 'production'
+          ? {}
+          : {
+              nombre: errorPostgres.name,
+              mensaje: errorPostgres.message,
+              pista: errorPostgres.hint,
+              posicion: errorPostgres.position,
+              rutina: errorPostgres.routine,
+            }),
+      };
+      console.error('DETALLE ERROR SUPABASE:', JSON.stringify(detalleError, null, 2));
     }
     throw error;
   }

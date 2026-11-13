@@ -184,3 +184,11 @@
 - `npm.cmd test`: 82 pruebas pasaron en 22 archivos. `npm.cmd run build`: exitoso.
 - El mensaje exacto de la ejecución del usuario no está disponible todavía; el nuevo log permitirá identificarlo en el próximo intento sin registrar PII.
 - Evidencia: `doc/checkpoints/FASE_9_COMPLETADA.md`.
+
+### P17 · Diagnóstico PostgreSQL serializado
+
+- El endpoint `/api/reservas/publica` ahora emite `DETALLE ERROR SUPABASE:` con un JSON legible que incluye el código y los metadatos de esquema disponibles; en desarrollo agrega el mensaje y la pista PostgreSQL. Se excluye `detail`, que puede contener datos de filas.
+- La respuesta al cliente público conserva el error saneado y no expone el mensaje interno de PostgreSQL. La prueba verifica ambos comportamientos y que no se registre información sensible.
+- `npm.cmd test -- src\test\reservas\publica-route.test.ts`: 5 pruebas pasaron. `npm.cmd test`: 82 pruebas pasaron en 22 archivos. `npm.cmd run build`: exitoso.
+- No se reprodujo el POST contra la base para evitar crear una reserva real de prueba; el motivo concreto se conocerá al revisar el nuevo log del servidor tras el próximo intento.
+- Evidencia: `doc/checkpoints/FASE_9_COMPLETADA.md`.

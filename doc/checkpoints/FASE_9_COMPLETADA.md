@@ -21,3 +21,4 @@
 - Validación visual local de `/reservas`: el banner y los filtros se muestran en secciones separadas.
 - En la revisión del flujo del 2026-11-13, la BD seguía sin canchas activas ni reservas: hace falta configurar una cancha real desde el módulo protegido antes de poder validar una reserva de extremo a extremo.
 - P13: `npm.cmd test`: 78 pruebas pasaron en 22 archivos; `npm.cmd run build`: exitoso.
+- P14: la agenda ahora no presenta celdas verdes sin una cancha activa; el clic de una franja libre abre el panel "Tu reserva", la confirmación cierra el panel y bloquea la franja. Pruebas de panel/no-cancha incluidas. `npm.cmd test`: 80 pruebas pasaron en 22 archivos; `npm.cmd run build`: exitoso. No se pudo insertar una reserva real porque la BD carece de canchas activas.

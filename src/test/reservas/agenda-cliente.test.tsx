@@ -40,6 +40,26 @@ describe('AgendaCliente', () => {
     vi.unstubAllGlobals();
   });
 
+  it('abre el panel lateral al pulsar una franja libre', () => {
+    render(<AgendaCliente canchas={[CANCHA]} ocupadas={[]} fechas={FECHAS} hoy="2026-11-12" canchaInicial={CANCHA.id} />);
+
+    expect(screen.queryByRole('heading', { name: 'Tu reserva' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getAllByRole('button', { name: /06:00 libre/i })[0]!);
+
+    expect(screen.getByRole('heading', { name: 'Tu reserva' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Nombre completo')).toBeInTheDocument();
+    expect(screen.getByLabelText('WhatsApp')).toBeInTheDocument();
+    expect(screen.getByLabelText('Correo electrónico')).toBeInTheDocument();
+  });
+
+  it('no muestra franjas libres ni formulario si no hay canchas activas', () => {
+    render(<AgendaCliente canchas={[]} ocupadas={[]} fechas={FECHAS} hoy="2026-11-12" canchaInicial="" />);
+
+    expect(screen.getByRole('heading', { name: 'No hay canchas disponibles' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /06:00 libre/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Tu reserva' })).not.toBeInTheDocument();
+  });
+
   it('calcula tarifa base y anticipo, habilita CTA y envía sin precio manual', async () => {
     render(<AgendaCliente canchas={[CANCHA]} ocupadas={[]} fechas={FECHAS} hoy="2026-11-12" canchaInicial={CANCHA.id} />);
 
@@ -70,6 +90,7 @@ describe('AgendaCliente', () => {
     })));
     expect(JSON.parse(fetchMock.mock.calls[0]?.[1]?.body as string)).not.toHaveProperty('valorTotal');
     expect(await screen.findByRole('button', { name: /06:00 ocupada/i })).toBeDisabled();
+    expect(screen.queryByRole('heading', { name: 'Tu reserva' })).not.toBeInTheDocument();
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
       expect.stringContaining('/api/reservas/publica?desde='),
       expect.objectContaining({ cache: 'no-store' }),

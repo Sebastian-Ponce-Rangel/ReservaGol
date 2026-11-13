@@ -7,6 +7,7 @@ import { Aviso } from '@/components/ui/Aviso';
 import { Boton } from '@/components/ui/Boton';
 import { Campo } from '@/components/ui/Campo';
 import { Selector } from '@/components/ui/Selector';
+import { EstadoVacio } from '@/components/ui/EstadoVacio';
 import { DIRECCION_SEDE, HORA_APERTURA, HORA_CIERRE, PRECIO_HORA_BASE } from '@/lib/config/reservagol';
 import { formatearFecha, formatearHora, formatearPesos } from '@/lib/formato';
 import type { BloqueOcupadoPublico, Cancha } from '@/lib/datos/tipos';
@@ -70,6 +71,19 @@ export function AgendaCliente({ canchas, ocupadas, fechas, hoy, canchaInicial }:
   const total = cancha && duracionHoras > 0 ? tarifaPorHora * duracionHoras : 0;
   const anticipo = total > 0 ? Math.ceil(total * 0.25) : 0;
   const puedeAnterior = inicioRango > hoy;
+
+  function seleccionarFranja(fecha: string, horaInicio: string, horaFin: string) {
+    const ocupada = bloquesOcupados.some((bloque) =>
+      bloque.canchaId === canchaId &&
+      bloque.fecha === fecha &&
+      bloque.horaInicio < horaFin &&
+      horaInicio < bloque.horaFin
+    );
+    if (!cancha || fecha < hoy || ocupada) return;
+    setSeleccion({ fecha, horaInicio, horaFin });
+    setConfirmacion(null);
+    setAviso(null);
+  }
 
   const actualizarDisponibilidad = useCallback(async (signal?: AbortSignal) => {
     const parametros = new URLSearchParams({ desde: inicioRango, hasta: finRango });
@@ -204,6 +218,14 @@ export function AgendaCliente({ canchas, ocupadas, fechas, hoy, canchaInicial }:
         </Aviso>
       )}
 
+      {!cancha ? (
+        <EstadoVacio
+          titulo={canchas.length === 0 ? 'No hay canchas disponibles' : 'Selecciona una cancha'}
+          detalle={canchas.length === 0
+            ? 'El propietario debe registrar una cancha activa antes de habilitar reservas.'
+            : 'Selecciona una cancha activa para consultar sus horarios disponibles.'}
+        />
+      ) : (
       <div className={seleccion ? 'agenda-board agenda-board--seleccionada' : 'agenda-board'}>
         <section className="agenda-matriz rounded-xl border border-slate-200 bg-white p-4 shadow-sm" aria-labelledby="disponibilidad-publica">
           <div className="seccion-cabecera">
@@ -218,7 +240,7 @@ export function AgendaCliente({ canchas, ocupadas, fechas, hoy, canchaInicial }:
                 return <tr key={horaInicio}><th className="agenda-hora" scope="row">{formatearHora(horaInicio)}</th>{visibles.map((fecha) => {
                   const ocupada = bloquesOcupados.some((bloque) => bloque.canchaId === canchaId && bloque.fecha === fecha && bloque.horaInicio < horaFin && horaInicio < bloque.horaFin);
                   const activa = seleccion?.fecha === fecha && seleccion.horaInicio === horaInicio;
-                  return <td key={fecha}><button className={`agenda-celda ${ocupada ? 'agenda-celda--ocupada' : 'agenda-celda--libre'}${activa ? ' agenda-celda--seleccionada' : ''}`} type="button" disabled={ocupada || fecha < hoy} aria-label={`${etiquetaDia(fecha)} ${formatearHora(horaInicio)} ${ocupada ? 'ocupada' : 'libre'}`} onClick={() => { setSeleccion({ fecha, horaInicio, horaFin }); setConfirmacion(null); setAviso(null); }}><span className={`agenda-badge ${ocupada ? 'agenda-badge--ocupada' : 'agenda-badge--libre'}`}>{ocupada ? 'Ocupada' : 'Libre'}</span></button></td>;
+                  return <td key={fecha}><button className={`agenda-celda ${ocupada ? 'agenda-celda--ocupada' : 'agenda-celda--libre'}${activa ? ' agenda-celda--seleccionada' : ''}`} type="button" disabled={ocupada || fecha < hoy || !cancha} aria-label={`${etiquetaDia(fecha)} ${formatearHora(horaInicio)} ${ocupada ? 'ocupada' : 'libre'}`} onClick={() => seleccionarFranja(fecha, horaInicio, horaFin)}><span className={`agenda-badge ${ocupada ? 'agenda-badge--ocupada' : 'agenda-badge--libre'}`}>{ocupada ? 'Ocupada' : 'Libre'}</span></button></td>;
                 })}</tr>;
               })}</tbody>
             </table>
@@ -241,6 +263,7 @@ export function AgendaCliente({ canchas, ocupadas, fechas, hoy, canchaInicial }:
           {aviso && <Aviso tono={aviso.tipo} role="status">{aviso.texto}</Aviso>}
         </aside>}
       </div>
+      )}
     </main>
   );
 }

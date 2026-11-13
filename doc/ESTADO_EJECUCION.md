@@ -16,6 +16,7 @@
 | P11 | Sincronización de agenda y contaduría | Completado | `FASE_9_COMPLETADA.md`; 77 pruebas, build y consultas de BD correctos |
 | P12 | Reservas en contaduría y retiro de datos simulados | Completado | `FASE_9_COMPLETADA.md`; panel enlazado a `v_reservas`, datos Demo/Prueba retirados, 77 pruebas y build correctos |
 | P13 | Visibilidad de reservas recientes y diagnóstico del formulario | Completado con prerrequisito operativo | `FASE_9_COMPLETADA.md`; listado sin filtro por mes, errores registrados sin datos personales; BD verificada sin canchas ni reservas reales |
+| P14 | Restaurar panel de agenda sin canchas configuradas | Completado con prerrequisito operativo | `FASE_9_COMPLETADA.md`; clic abre formulario, confirmación bloquea franja; estado vacío claro cuando no hay canchas; 80 pruebas y build correctos |
 
 ## Bitácora
 
@@ -152,4 +153,13 @@
 - El formulario registra errores de red, respuestas inválidas y rechazos del servidor en consola sin incluir datos personales; tras una creación exitosa sigue marcando la franja como ocupada inmediatamente y consulta de nuevo la disponibilidad.
 - La lectura de solo consulta a la base configurada confirmó 0 canchas activas y 0 reservas. Sin una cancha real configurada no se puede completar una reserva ni verificar un recorrido real cliente→agenda→Contaduría; no se insertaron datos simulados.
 - `npm.cmd test`: 78 pruebas pasaron en 22 archivos. `npm.cmd run build`: exitoso.
+- Evidencia: `doc/checkpoints/FASE_9_COMPLETADA.md`.
+
+### P14 · 2026-11-13 · Completado con prerrequisito operativo
+
+- Se verificó que el `onClick` de las franjas libres abría el panel cuando existía una cancha. El problema real de la BD vacía era que la agenda mostraba franjas verdes aunque no había cancha seleccionable; por la condición del panel, el clic no podía abrir el formulario.
+- Si no hay cancha activa, la agenda muestra un estado vacío explicativo en lugar de franjas verdes. El selector de franja valida cancha, fecha y solapes antes de abrir el formulario.
+- Se añadieron pruebas para apertura del panel, cierre tras guardar y vista sin canchas. El flujo de persistencia sigue llamando la API de servidor, que inserta en una transacción PostgreSQL; no se expone el cliente Supabase en el navegador.
+- `npm.cmd test`: 80 pruebas pasaron en 22 archivos. `npm.cmd run build`: exitoso.
+- La BD sigue sin canchas activas ni reservas, por lo que la prueba de extremo a extremo con datos reales queda bloqueada hasta registrar una cancha real.
 - Evidencia: `doc/checkpoints/FASE_9_COMPLETADA.md`.

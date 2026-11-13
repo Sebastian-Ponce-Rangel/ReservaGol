@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Trophy } from 'lucide-react';
 
 type FieldErrors = {
   email?: string;
@@ -46,7 +47,7 @@ export default function LoginPage() {
         return;
       }
 
-      router.replace('/reservas');
+      router.replace('/admin');
       router.refresh();
     } catch {
       setAuthError('No fue posible iniciar sesión. Intenta de nuevo.');
@@ -56,9 +57,9 @@ export default function LoginPage() {
 
   return (
     <main className="page-shell login-shell">
-      <section className="login-panel" aria-labelledby="login-title">
+      <section className="login-panel backdrop-blur-md" aria-labelledby="login-title">
         <a className="login-brand" href="/" aria-label="ReservaGol, inicio">
-          <span className="login-brand-mark" aria-hidden="true">RG</span>
+          <span className="login-brand-mark" aria-hidden="true"><Trophy size={18} /></span>
           <span>ReservaGol</span>
         </a>
 

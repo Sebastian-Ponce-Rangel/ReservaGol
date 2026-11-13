@@ -33,6 +33,20 @@ describe('POST /api/auth/login', () => {
     expect(respuesta.headers.get('Cache-Control')).toBe('no-store');
   });
 
+  it('recorta espacios accidentales del correo y la contraseña', async () => {
+    vi.stubEnv('RESERVAGOL_ADMIN_EMAIL', ` ${EMAIL} `);
+    vi.stubEnv('RESERVAGOL_ADMIN_PASSWORD', ` ${PASSWORD} `);
+    vi.stubEnv('RESERVAGOL_SESSION_SECRET', SECRETO);
+
+    const respuesta = await POST(crearRequest({
+      email: ` ${EMAIL} `,
+      password: ` ${PASSWORD}\n`,
+    }));
+
+    expect(respuesta.status).toBe(200);
+    expect(respuesta.headers.get('set-cookie')).toContain(`${NOMBRE_COOKIE_SESION}=`);
+  });
+
   it('rechaza credenciales incorrectas sin emitir cookie', async () => {
     vi.stubEnv('RESERVAGOL_ADMIN_EMAIL', EMAIL);
     vi.stubEnv('RESERVAGOL_ADMIN_PASSWORD', PASSWORD);
@@ -42,6 +56,21 @@ describe('POST /api/auth/login', () => {
 
     expect(respuesta.status).toBe(401);
     expect(cuerpo.error.codigo).toBe('NO_AUTORIZADO');
+    expect(cuerpo.error.mensaje).toBe('Correo o contraseña incorrectos.');
     expect(respuesta.headers.get('set-cookie')).toBeNull();
+  });
+
+  it('explica cuando faltan las variables de autenticación', async () => {
+    vi.stubEnv('RESERVAGOL_ADMIN_EMAIL', '');
+    vi.stubEnv('RESERVAGOL_ADMIN_PASSWORD', '');
+    vi.stubEnv('RESERVAGOL_SESSION_SECRET', '');
+
+    const respuesta = await POST(crearRequest({ email: EMAIL, password: PASSWORD }));
+    const cuerpo = await respuesta.json();
+
+    expect(respuesta.status).toBe(500);
+    expect(cuerpo.error.codigo).toBe('ERROR_INTERNO');
+    expect(cuerpo.error.mensaje).toContain('RESERVAGOL_ADMIN_EMAIL');
+    expect(cuerpo.error.mensaje).toContain('RESERVAGOL_SESSION_SECRET');
   });
 });

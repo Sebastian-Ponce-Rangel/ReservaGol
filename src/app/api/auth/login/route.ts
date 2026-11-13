@@ -21,19 +21,29 @@ function sonIgualesConstantes(valor: string, esperado: string): boolean {
 export const POST = conManejoDeErrores(async (request: Request) => {
   const credenciales = await leerCuerpo(request, esquemaLogin);
   const emailConfigurado = process.env.RESERVAGOL_ADMIN_EMAIL?.trim().toLowerCase();
-  const passwordConfigurada = process.env.RESERVAGOL_ADMIN_PASSWORD;
+  const passwordConfigurada = process.env.RESERVAGOL_ADMIN_PASSWORD?.trim();
   const secreto = process.env.RESERVAGOL_SESSION_SECRET;
 
   if (!emailConfigurado || !passwordConfigurada || !secreto) {
-    throw new Error('Falta configurar las variables de autenticación de ReservaGol.');
+    throw new ErrorDeNegocio(
+      'ERROR_INTERNO',
+      'El acceso no está configurado. Define RESERVAGOL_ADMIN_EMAIL, RESERVAGOL_ADMIN_PASSWORD y RESERVAGOL_SESSION_SECRET en el entorno local.',
+    );
   }
 
   const emailIngresado = credenciales.email.trim().toLowerCase();
-  if (
-    !sonIgualesConstantes(emailIngresado, emailConfigurado) ||
-    !sonIgualesConstantes(credenciales.password, passwordConfigurada)
-  ) {
-    throw new ErrorDeNegocio('NO_AUTORIZADO');
+  const passwordIngresada = credenciales.password.trim();
+  const correoCoincide = sonIgualesConstantes(emailIngresado, emailConfigurado);
+  const passwordCoincide = sonIgualesConstantes(passwordIngresada, passwordConfigurada);
+
+  if (!correoCoincide || !passwordCoincide) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.info('[auth/login] Rechazo de credenciales', {
+        correoCoincide,
+        passwordCoincide,
+      });
+    }
+    throw new ErrorDeNegocio('NO_AUTORIZADO', 'Correo o contraseña incorrectos.');
   }
 
   const token = firmarTokenSesion(emailConfigurado, secreto);

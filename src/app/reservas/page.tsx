@@ -1,6 +1,6 @@
-import { AgendaDia } from '@/components/reservagol/AgendaDia';
-import { listarCanchas, listarReservas, disponibilidad } from '@/lib/dataService';
-import { hoyBogota, esFechaValida } from '@/lib/reglas/fechas';
+import { AgendaCliente } from '@/components/reservagol/AgendaCliente';
+import { listarBloquesOcupadosPublicos, listarCanchas } from '@/lib/dataService';
+import { esFechaValida, hoyBogota } from '@/lib/reglas/fechas';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,31 +8,35 @@ type Props = {
   searchParams: Promise<{ canchaId?: string; fecha?: string }>;
 };
 
+function diasSiguientes(fechaInicial: string): string[] {
+  const inicio = new Date(`${fechaInicial}T00:00:00.000Z`);
+  return Array.from({ length: 7 }, (_, indice) => {
+    const fecha = new Date(inicio);
+    fecha.setUTCDate(inicio.getUTCDate() + indice);
+    return fecha.toISOString().slice(0, 10);
+  });
+}
+
 export default async function ReservasPage({ searchParams }: Props) {
   const parametros = await searchParams;
-  const canchas = await listarCanchas();
-  const canchaSeleccionada = canchas.some((cancha) => cancha.id === parametros.canchaId)
+  const hoy = hoyBogota();
+  const fechaReferencia = parametros.fecha && esFechaValida(parametros.fecha) && parametros.fecha >= hoy
+    ? parametros.fecha
+    : hoy;
+  const fechas = diasSiguientes(fechaReferencia);
+  const [canchas, ocupadas] = await Promise.all([
+    listarCanchas(),
+    listarBloquesOcupadosPublicos(fechas[0] ?? hoy, fechas[fechas.length - 1] ?? hoy),
+  ]);
+  const canchaInicial = canchas.some((cancha) => cancha.id === parametros.canchaId)
     ? parametros.canchaId ?? ''
     : canchas[0]?.id ?? '';
-  const hoy = hoyBogota();
-  const fecha = parametros.fecha && esFechaValida(parametros.fecha) ? parametros.fecha : hoy;
 
-  if (!canchaSeleccionada) {
-    return <AgendaDia canchas={canchas} canchaId="" fecha={fecha} reservas={[]} ocupadas={[]} />;
-  }
-
-  const [reservas, disponibilidadDelDia] = await Promise.all([
-    listarReservas({ canchaId: canchaSeleccionada, fecha, estado: 'activa' }),
-    disponibilidad(canchaSeleccionada, fecha),
-  ]);
-
-  return (
-    <AgendaDia
+  return <AgendaCliente
       canchas={canchas}
-      canchaId={canchaSeleccionada}
-      fecha={fecha}
-      reservas={reservas}
-      ocupadas={disponibilidadDelDia.ocupadas}
-    />
-  );
+      canchaInicial={canchaInicial}
+      hoy={hoy}
+      fechas={fechas}
+      ocupadas={ocupadas}
+    />;
 }

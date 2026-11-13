@@ -1,6 +1,6 @@
 import type { PoolClient } from 'pg';
 import { conTransaccion, consultar } from '@/lib/db/conexion';
-import { LIMITE_LISTADO } from '@/lib/config/reservagol';
+import { LIMITE_LISTADO, PRECIO_HORA_BASE } from '@/lib/config/reservagol';
 import { ErrorDeNegocio } from '@/lib/reglas/errores';
 import { hoyBogota } from '@/lib/reglas/fechas';
 import { haySolape } from '@/lib/reglas/horario';
@@ -13,10 +13,12 @@ import type {
   Abono,
   Cobro,
   DatosReserva,
+  DatosReservaPublica,
   FiltrosReservas,
   Franja,
   Reserva,
   ReservaConCobro,
+  BloqueOcupadoPublico,
 } from './tipos';
 
 type FilaReservaVista = {
@@ -30,6 +32,7 @@ type FilaReservaVista = {
   horaFin: string;
   valorTotal: number;
   estado: 'activa' | 'cancelada';
+  metodoAnticipo?: 'transferencia' | 'efectivo' | null;
   abonado: number;
 };
 
@@ -57,6 +60,7 @@ const SQL_RESERVA_VISTA = `
     hora_inicio AS "horaInicio",
     hora_fin AS "horaFin",
     valor_total AS "valorTotal",
+    metodo_anticipo AS "metodoAnticipo",
     estado,
     abonado
   FROM v_reservas
@@ -141,12 +145,116 @@ function mapearErrorDeReserva(error: unknown): never {
   throw error;
 }
 
+export async function listarBloquesOcupadosPublicos(
+  desde: string,
+  hasta: string,
+): Promise<BloqueOcupadoPublico[]> {
+  return consultar<BloqueOcupadoPublico>(
+    `SELECT cancha_id AS "canchaId", fecha::text AS fecha,
+            hora_inicio AS "horaInicio", hora_fin AS "horaFin"
+     FROM reservas
+     WHERE estado = 'activa' AND fecha BETWEEN $1 AND $2
+     ORDER BY fecha, cancha_id, hora_inicio`,
+    [desde, hasta],
+  );
+}
+
+export async function crearReservaPublica(
+  datos: DatosReservaPublica,
+): Promise<{ id: string; valorTotal: number }> {
+  try {
+    return await conTransaccion(async (tx) => {
+      const resultadoCancha = await tx.query<{ precioHora: number | null }>(
+        `SELECT precio_hora AS "precioHora"
+         FROM canchas WHERE id = $1 AND activa = true FOR UPDATE`,
+        [datos.canchaId],
+      );
+      const cancha = resultadoCancha.rows[0];
+      if (!cancha) throw new ErrorDeNegocio('CANCHA_NO_ENCONTRADA');
+      const precioHora = cancha.precioHora ?? PRECIO_HORA_BASE;
+      if (!Number.isInteger(precioHora) || precioHora <= 0) throw new ErrorDeNegocio('DATOS_INVALIDOS');
+
+      const duracionMinutos =
+        (Number(datos.horaFin.slice(0, 2)) - Number(datos.horaInicio.slice(0, 2))) * 60;
+      if (duracionMinutos <= 0 || duracionMinutos % 60 !== 0) {
+        throw new ErrorDeNegocio('DATOS_INVALIDOS');
+      }
+      const valorTotal = (precioHora * duracionMinutos) / 60;
+      validarReserva({ ...datos, valorTotal }, hoyBogota());
+
+      const activas = await tx.query<Franja>(
+        `SELECT hora_inicio AS "horaInicio", hora_fin AS "horaFin"
+         FROM reservas
+         WHERE cancha_id = $1 AND fecha = $2 AND estado = 'activa'
+         FOR UPDATE`,
+        [datos.canchaId, datos.fecha],
+      );
+      for (const franja of activas.rows) {
+        if (haySolape(datos.horaInicio, datos.horaFin, franja.horaInicio, franja.horaFin)) {
+          throw new ErrorDeNegocio('CHOQUE_HORARIO', undefined, {
+            conflicto: { horaInicio: franja.horaInicio, horaFin: franja.horaFin },
+          });
+        }
+      }
+
+      const creado = await tx.query<{ id: string }>(
+        `INSERT INTO clientes (nombre, contacto, email)
+         VALUES ($1, $2, $3) RETURNING id`,
+        [datos.clienteNuevo.nombre, datos.clienteNuevo.contacto, datos.clienteNuevo.email],
+      );
+      const clienteId = creado.rows[0]?.id;
+      if (!clienteId) throw new ErrorDeNegocio('ERROR_INTERNO');
+
+      const reserva = await tx.query<{ id: string }>(
+        `INSERT INTO reservas
+          (cancha_id, cliente_id, fecha, hora_inicio, hora_fin, valor_total,
+           metodo_anticipo, privacidad_aceptada_en, estado)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), 'activa')
+         RETURNING id`,
+        [
+          datos.canchaId,
+          clienteId,
+          datos.fecha,
+          datos.horaInicio,
+          datos.horaFin,
+          valorTotal,
+          datos.metodoAnticipo,
+        ],
+      );
+      const id = reserva.rows[0]?.id;
+      if (!id) throw new ErrorDeNegocio('ERROR_INTERNO');
+      return { id, valorTotal };
+    });
+  } catch (error) {
+    return mapearErrorDeReserva(error);
+  }
+}
+
 export async function crearReserva(datos: DatosReserva): Promise<Reserva> {
   try {
     return await conTransaccion(async (tx) => {
       validarReserva(datos, hoyBogota());
       await exigirCanchaActiva(tx, datos.canchaId);
-      await exigirClienteActivo(tx, datos.clienteId);
+
+      let clienteId = datos.clienteId;
+      if (datos.clienteNuevo) {
+        const resultadoCliente = await tx.query<{ id: string }>(
+          `INSERT INTO clientes (nombre, contacto, email)
+           VALUES ($1, $2, $3)
+           RETURNING id`,
+          [
+            datos.clienteNuevo.nombre,
+            datos.clienteNuevo.contacto,
+            datos.clienteNuevo.email,
+          ],
+        );
+        clienteId = resultadoCliente.rows[0]?.id;
+        if (!clienteId) throw new ErrorDeNegocio('ERROR_INTERNO');
+      } else if (clienteId) {
+        await exigirClienteActivo(tx, clienteId);
+      }
+
+      if (!clienteId) throw new ErrorDeNegocio('DATOS_INVALIDOS');
 
       const activas = await tx.query<Franja>(
         `SELECT hora_inicio AS "horaInicio", hora_fin AS "horaFin"
@@ -169,16 +277,20 @@ export async function crearReserva(datos: DatosReserva): Promise<Reserva> {
 
       const insertada = await tx.query<{ id: string }>(
         `INSERT INTO reservas
-          (cancha_id, cliente_id, fecha, hora_inicio, hora_fin, valor_total, estado)
-         VALUES ($1, $2, $3, $4, $5, $6, 'activa')
+          (cancha_id, cliente_id, fecha, hora_inicio, hora_fin, valor_total,
+           metodo_anticipo, privacidad_aceptada_en, estado)
+         VALUES ($1, $2, $3, $4, $5, $6, $7,
+                 CASE WHEN $8::boolean THEN NOW() ELSE NULL END, 'activa')
          RETURNING id`,
         [
           datos.canchaId,
-          datos.clienteId,
+          clienteId,
           datos.fecha,
           datos.horaInicio,
           datos.horaFin,
           datos.valorTotal,
+          datos.metodoAnticipo ?? null,
+          datos.politicasAceptadas ?? false,
         ],
       );
       const fila = insertada.rows[0];

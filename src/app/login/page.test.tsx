@@ -32,7 +32,7 @@ describe('LoginPage', () => {
     expect(screen.getByText('La contraseña es obligatoria.')).toBeInTheDocument();
   });
 
-  it('inicia sesión y navega a reservas', async () => {
+  it('inicia sesión y navega al panel del propietario', async () => {
     fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({ ok: true, datos: { email: 'demo@reservagol.com' } }),
@@ -43,7 +43,7 @@ describe('LoginPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Iniciar sesión' }));
 
     expect(screen.getByRole('button', { name: 'Entrando...' })).toBeDisabled();
-    await waitFor(() => expect(replace).toHaveBeenCalledWith('/reservas'));
+    await waitFor(() => expect(replace).toHaveBeenCalledWith('/admin'));
     expect(fetchMock).toHaveBeenCalledWith('/api/auth/login', expect.objectContaining({ method: 'POST' }));
     expect(refresh).toHaveBeenCalled();
   });

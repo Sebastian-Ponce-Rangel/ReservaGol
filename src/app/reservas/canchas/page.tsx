@@ -4,6 +4,7 @@ import { EstadoVacio } from '@/components/ui/EstadoVacio';
 import { Insignia } from '@/components/ui/Insignia';
 import { listarCanchas } from '@/lib/dataService';
 import { formatearPesos } from '@/lib/formato';
+import { PRECIO_HORA_BASE } from '@/lib/config/reservagol';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,7 +34,7 @@ export default async function CanchasPage() {
               <li className="fila-entidad" key={cancha.id}>
                 <div className="entidad-principal">
                   <h3>{cancha.nombre}</h3>
-                  <p>{cancha.precioHora === null ? 'Precio por hora no definido' : formatearPesos(cancha.precioHora)}</p>
+                  <p>{formatearPesos(cancha.precioHora ?? PRECIO_HORA_BASE)}{cancha.precioHora == null ? ' · tarifa base' : ''}</p>
                 </div>
                 <div className="entidad-acciones">
                   <Insignia tono={cancha.activa ? 'verde' : 'neutro'}>

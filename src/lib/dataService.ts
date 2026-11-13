@@ -9,16 +9,19 @@ export {
   desactivarCliente,
   exigirClienteActivo,
   listarClientes,
+  listarClientesConReservas,
 } from './datos/clientes';
 export {
   cancelarReserva,
   crearReserva,
   disponibilidad,
+  listarBloquesOcupadosPublicos,
+  crearReservaPublica,
   listarReservas,
   obtenerReserva,
   registrarAbono,
 } from './datos/reservas';
-export { agendaDelDia, resumenCobros } from './datos/resumen';
+export { agendaDelDia, resumenCobros, resumenAdministrador } from './datos/resumen';
 export {
   limpiarDatosDemo,
   limpiarDatosPrueba,
@@ -30,6 +33,7 @@ export type {
   AgendaDia,
   Cancha,
   Cliente,
+  ClienteConReservas,
   Cobro,
   DatosAbono,
   DatosCancha,
@@ -38,6 +42,7 @@ export type {
   EstadoReserva,
   Franja,
   Reserva,
+  ReservaCliente,
   ReservaConCobro,
   ResumenCobros,
 } from './datos/tipos';

@@ -10,8 +10,11 @@
 | P05 | API | Completado | API autenticada probada; 8 endpoints sin sesión devuelven 401 |
 | P06 | Interfaz base, canchas y clientes | Completado; fase 5 sigue abierta | Gestión UI validada; 42 tests y build correcto |
 | P07 | Agenda y creación de reservas | Completado; fase 5 sigue abierta | Agenda y formulario probados; 42 tests y build correcto |
-| P08 | Detalle, cobro y aceptación | Pendiente | |
-| P09 | Opcionales | Pendiente | |
+| P08 | Detalle, cobro y aceptación | Completado | `ACEPTACION.md`, checkpoints Fase 5 y 6; 42 tests, flujo 15/15 y build correctos |
+| P09 | Opcionales | Implementado; aceptación manual pendiente | `FASE_7_COMPLETADA.md`; build y 47 pruebas correctos; A-15 requiere sesión local |
+| P10 | Disponibilidad, navegación e identidad visual | Completado | `FASE_8_COMPLETADA.md`; actualización pública cada 5 s; 73 pruebas y build correctos |
+| P11 | Sincronización de agenda y contaduría | Completado | `FASE_9_COMPLETADA.md`; 77 pruebas, build y consultas de BD correctos |
+| P12 | Reservas en contaduría y retiro de datos simulados | Completado | `FASE_9_COMPLETADA.md`; panel enlazado a `v_reservas`, datos Demo/Prueba retirados, 77 pruebas y build correctos |
 
 ## Bitácora
 
@@ -92,3 +95,52 @@
 - Responsive verificado a 390 px: sin overflow horizontal.
 - La fase 5 sigue abierta hasta P08.
 - Evidencia: `doc/checkpoints/FASE_5_P07_COMPLETADA.md`.
+
+### P08 · 2026-11-08 · Completado
+
+- Se verificaron los entregables ya presentes: detalle de reserva, panel de cobro y cancelación, `doc/ACEPTACION.md` con A-01 a A-15 y README actualizado. A-15 queda para P09; A-01 a A-14 se ejecutan en Vercel.
+- Revisión de reglas y seguridad sin defectos pendientes: creación de reservas dentro de transacción con bloqueo de cancha y reservas activas; franjas semiabiertas; estado de pago derivado; abonos enteros limitados al saldo; fecha actual mediante `hoyBogota()`; rutas protegidas con `exigirSesion()`; SQL parametrizado y estados con texto además de color.
+- `npm.cmd run probar:flujo`: 15/15 pasos correctos. `npm.cmd test`: 42 pruebas pasaron.
+- `npm.cmd run db:limpiar -- --prueba`: 0 registros de prueba eliminados; los datos Demo se conservaron.
+- `.env.local` está excluido por `.gitignore` y no está versionado. El único archivo de entorno rastreado es `.env.example`, con valores vacíos; no se detectaron credenciales versionadas.
+- `npm.cmd run build`: exitoso. Checkpoints: `FASE_5_COMPLETADA.md` y `FASE_6_COMPLETADA.md`.
+
+### P09 · 2026-11-08 · Implementado
+
+- Se habilitó la agenda de todas las canchas para una fecha, conservando solo reservas activas y mostrando cada hora de 06:00 a 23:00 como ocupada o libre.
+- Se añadió `GET /api/reservas/resumen?desde=&hasta=` autenticado, con validación de fechas y rechazo de rangos invertidos. El resumen cuenta reservas y estados de pago por fecha de reserva; suma abonos también de reservas canceladas, porque no hay flujo de reembolso.
+- `/reservas/resumen` presenta la rejilla y el resumen del periodo. El rango inicial cubre el mes actual.
+- `npm.cmd run build`: exitoso. `npm.cmd test`: 47 pruebas pasaron.
+- A-15 está implementado pero su comprobación visual local queda pendiente: el navegador redirigió a `/login` y no se inició sesión. Según el fixture Demo documentado en P04, el total esperado es $70.000 ($20.000 + $50.000), con tres reservas (una pendiente, una con anticipo y una pagada); no se registró como resultado observado.
+- La aceptación en Vercel permanece pendiente según el procedimiento de `doc/ACEPTACION.md`.
+- Evidencia: `doc/checkpoints/FASE_7_COMPLETADA.md`.
+
+### P10 · 2026-11-13 · Completado
+
+- La agenda pública actualiza la disponibilidad desde el endpoint público cada cinco segundos y refresca inmediatamente después de una reserva exitosa; las franjas recién ocupadas se muestran en rojo en el navegador actual y en los demás usuarios conectados.
+- Las vistas de `/reservas/*` muestran la navegación autenticada cuando hay sesión; conserva los accesos a Contaduría, Canchas, Clientes y Resumen. La barra administrativa permanece sticky durante la navegación.
+- Se reemplazaron las marcas `RG` por un trofeo y el nombre ReservaGol en las cabeceras públicas y privadas; se mantiene contraste legible en el login.
+- No se modificó la persistencia ni la conexión Postgres existente. La creación pública sigue guardando una reserva activa transaccionalmente.
+- `npm.cmd test`: 73 pruebas pasaron. `npm.cmd run build`: exitoso.
+- Evidencia: `doc/checkpoints/FASE_8_COMPLETADA.md`.
+
+### P11 · 2026-11-13 · Completado
+
+- La agenda pública organiza hero, filtros y agenda en una cuadrícula con separación explícita para evitar solapamientos.
+- La reserva pública guarda cliente y franja exacta en la misma transacción; las pruebas cubren la asociación, fecha, horas y estado activo.
+- El panel de Contaduría y Clientes se actualiza cada cinco segundos. `resumenAdministrador` y `listarClientesConReservas` leen la vista compartida `v_reservas`, que refleja reservas y abonos de las tablas activas.
+- Clientes ahora muestra teléfono, correo y cada reserva con cancha, fecha/hora, total, anticipo requerido, abono realmente registrado, saldo y estado de pago. El anticipo pendiente no se contabiliza como ingreso.
+- `npm.cmd run db:verificar`: 0 fallas. Lectura de solo consulta en la BD configurada: 3 clientes, 3 reservas, 3 alquileres en el período y $70.000 registrados; no se imprimieron datos personales ni secretos.
+- Validación visual local de `/reservas`: hero y filtros quedan en filas separadas.
+- `npm.cmd test`: 77 pruebas pasaron en 23 archivos. `npm.cmd run build`: exitoso.
+- Evidencia: `doc/checkpoints/FASE_9_COMPLETADA.md`.
+
+### P12 · 2026-11-13 · Completado
+
+- Contaduría muestra las últimas diez reservas del período seleccionado, consultadas desde `v_reservas` y vinculadas a los datos del cliente. Incluye contacto, correo, cancha, fecha, horario, total, anticipo requerido, abonos recibidos, saldo y estados.
+- El panel conserva la actualización cada cinco segundos y el resumen financiero continúa contando únicamente abonos recibidos.
+- Se retiraron el fixture estático antiguo de reservas y su prueba de datos semilla; las rutas de la aplicación usan la capa de datos conectada a Postgres.
+- Por solicitud de eliminar datos de prueba, `db:limpiar` retiró 2 abonos, 3 reservas, 3 clientes y 2 canchas con prefijos Demo/Prueba. La base configurada quedó sin registros de dominio; el panel refleja correctamente el estado vacío hasta que se creen reservas reales.
+- `npm.cmd run db:verificar`: 0 fallas. Consulta del panel contra la BD después de la limpieza: 0 reservas y $0 en abonos, coincidente con las tablas vacías.
+- `npm.cmd test`: 77 pruebas pasaron en 22 archivos. `npm.cmd run build`: exitoso.
+- Evidencia: `doc/checkpoints/FASE_9_COMPLETADA.md`.

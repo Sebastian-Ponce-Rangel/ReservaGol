@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Boton } from '@/components/ui/Boton';
 import { Campo } from '@/components/ui/Campo';
 import { EstadoVacio } from '@/components/ui/EstadoVacio';
+import { Insignia } from '@/components/ui/Insignia';
 import { Selector } from '@/components/ui/Selector';
 import { InsigniaEstadoPago } from '@/components/reservagol/InsigniaEstadoPago';
 import { formatearHora } from '@/lib/formato';
@@ -42,7 +43,7 @@ export function AgendaDia({ canchas, canchaId, fecha, reservas, ocupadas }: Agen
       <header className="pagina-cabecera">
         <div>
           <p className="seccion-kicker">Operación diaria</p>
-          <h1>Agenda</h1>
+          <h1 className="agenda-titulo">Panel de Control</h1>
         </div>
         <Link
           className="boton boton--primario"
@@ -52,7 +53,7 @@ export function AgendaDia({ canchas, canchaId, fecha, reservas, ocupadas }: Agen
         </Link>
       </header>
 
-      <form className="agenda-filtros" action="/reservas" method="get">
+      <form className="agenda-filtros rounded-xl border border-gray-700/50 bg-gray-900/50 p-5 shadow-lg backdrop-blur-md" action="/reservas" method="get">
         <Selector etiqueta="Cancha" name="canchaId" defaultValue={canchaId} required disabled={canchas.length === 0}>
           {canchas.map((cancha) => (
             <option key={cancha.id} value={cancha.id}>{cancha.nombre}</option>
@@ -66,7 +67,7 @@ export function AgendaDia({ canchas, canchaId, fecha, reservas, ocupadas }: Agen
         <EstadoVacio titulo="No hay canchas activas" detalle="Agrega una cancha para consultar disponibilidad." />
       ) : (
         <div className="agenda-columnas">
-          <section className="agenda-seccion" aria-labelledby="ocupadas-titulo">
+          <section className="agenda-seccion rounded-xl border border-gray-700/50 bg-gray-900/50 p-5 shadow-lg backdrop-blur-md transition-shadow hover:shadow-green-500/10" aria-labelledby="ocupadas-titulo">
             <div className="seccion-cabecera">
               <h2 id="ocupadas-titulo">Ocupadas</h2>
               <span className="pagina-conteo">{reservas.length}</span>
@@ -79,13 +80,16 @@ export function AgendaDia({ canchas, canchaId, fecha, reservas, ocupadas }: Agen
                   .slice()
                   .sort((a, b) => a.horaInicio.localeCompare(b.horaInicio))
                   .map((reserva) => (
-                    <li className="agenda-ocupada" key={reserva.id}>
+                    <li className="agenda-ocupada transition-colors hover:bg-gray-800" key={reserva.id}>
                       <div className="agenda-horas">
                         {formatearHora(reserva.horaInicio)}–{formatearHora(reserva.horaFin)}
                       </div>
                       <div className="agenda-detalle">
-                        <strong>{reserva.clienteNombre}</strong>
+                        <Link className="agenda-detalle-enlace" href={`/reservas/${reserva.id}`}>
+                          {reserva.clienteNombre}
+                        </Link>
                         <span>{reserva.canchaNombre}</span>
+                        <Insignia tono="rojo">Ocupada</Insignia>
                       </div>
                       <InsigniaEstadoPago estado={reserva.estadoPago} />
                     </li>
@@ -94,7 +98,7 @@ export function AgendaDia({ canchas, canchaId, fecha, reservas, ocupadas }: Agen
             )}
           </section>
 
-          <section className="agenda-seccion" aria-labelledby="libres-titulo">
+          <section className="agenda-seccion rounded-xl border border-gray-700/50 bg-gray-900/50 p-5 shadow-lg backdrop-blur-md transition-shadow hover:shadow-green-500/10" aria-labelledby="libres-titulo">
             <div className="seccion-cabecera">
               <h2 id="libres-titulo">Franjas libres</h2>
               <span className="pagina-conteo">{libres.length}</span>
@@ -104,9 +108,9 @@ export function AgendaDia({ canchas, canchaId, fecha, reservas, ocupadas }: Agen
             ) : (
               <ul className="franjas-libres">
                 {libres.map((franja) => (
-                  <li key={`${franja.horaInicio}-${franja.horaFin}`}>
+                  <li className="transition-colors hover:bg-gray-800" key={`${franja.horaInicio}-${franja.horaFin}`}>
                     <span>{formatearHora(franja.horaInicio)}–{formatearHora(franja.horaFin)}</span>
-                    <span>Libre</span>
+                    <Insignia tono="verde">Libre</Insignia>
                   </li>
                 ))}
               </ul>

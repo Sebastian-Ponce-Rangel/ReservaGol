@@ -21,12 +21,42 @@ describe('proxy de sesión', () => {
     expect(respuesta.headers.get('Cache-Control')).toBe('no-store');
   });
 
-  it('redirige páginas protegidas al login sin sesión', () => {
+  it('permite la página pública de reservas sin sesión', () => {
     const request = new NextRequest('http://localhost/reservas');
+    const respuesta = proxy(request);
+
+    expect(respuesta.headers.get('x-middleware-next')).toBe('1');
+  });
+
+  it('redirige páginas administrativas al login sin sesión', () => {
+    const request = new NextRequest('http://localhost/admin');
     const respuesta = proxy(request);
 
     expect(respuesta.status).toBe(307);
     expect(respuesta.headers.get('location')).toBe('http://localhost/login');
+  });
+
+  it('redirige también subrutas del panel administrativo', () => {
+    const request = new NextRequest('http://localhost/admin/reportes');
+    const respuesta = proxy(request);
+
+    expect(respuesta.status).toBe(307);
+    expect(respuesta.headers.get('location')).toBe('http://localhost/login');
+  });
+
+  it('mantiene protegidas las páginas administrativas heredadas', () => {
+    const request = new NextRequest('http://localhost/reservas/canchas');
+    const respuesta = proxy(request);
+
+    expect(respuesta.status).toBe(307);
+    expect(respuesta.headers.get('location')).toBe('http://localhost/login');
+  });
+
+  it('permite solo el endpoint público específico sin sesión', () => {
+    const request = new NextRequest('http://localhost/api/reservas/publica');
+    const respuesta = proxy(request);
+
+    expect(respuesta.headers.get('x-middleware-next')).toBe('1');
   });
 
   it('deja pasar una cookie firmada válida', () => {

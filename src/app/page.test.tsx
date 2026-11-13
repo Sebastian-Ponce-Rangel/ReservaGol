@@ -1,34 +1,13 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import HomePage from './page';
 
-const { redirect, obtenerSesion } = vi.hoisted(() => ({
-  redirect: vi.fn(),
-  obtenerSesion: vi.fn(),
-}));
-
-vi.mock('next/navigation', () => ({
-  redirect,
-}));
-
-vi.mock('@/lib/auth/sesion', () => ({
-  obtenerSesion,
-}));
-
 describe('HomePage', () => {
-  beforeEach(() => {
-    redirect.mockClear();
-    obtenerSesion.mockReset();
-  });
+  it('presenta landing pública con enlaces de cliente y propietario', () => {
+    render(<HomePage />);
 
-  it('redirige al login sin sesión', async () => {
-    obtenerSesion.mockResolvedValue(null);
-    await HomePage();
-    expect(redirect).toHaveBeenCalledWith('/login');
-  });
-
-  it('redirige a reservas con sesión', async () => {
-    obtenerSesion.mockResolvedValue({ email: 'admin@reservagol.com' });
-    await HomePage();
-    expect(redirect).toHaveBeenCalledWith('/reservas');
+    expect(screen.getByRole('heading', { name: 'Tu próxima cancha empieza aquí' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Reservar ahora' })).toHaveAttribute('href', '/reservas');
+    expect(screen.getByRole('link', { name: 'Soy Propietario' })).toHaveAttribute('href', '/login');
   });
 });

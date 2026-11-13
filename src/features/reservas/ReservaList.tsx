@@ -2,6 +2,7 @@ import { EstadoVacio } from '@/components/ui/EstadoVacio';
 import { InsigniaEstadoPago } from '@/components/reservagol/InsigniaEstadoPago';
 import { formatearFecha, formatearHora, formatearPesos } from '@/lib/formato';
 import type { Reserva } from '@/lib/datos/tipos';
+import Link from 'next/link';
 
 type ReservaListProps = {
   reservas: Reserva[];
@@ -28,7 +29,11 @@ export function ReservaList({ reservas }: ReservaListProps) {
         <tbody>
           {reservas.map((reserva) => (
             <tr key={reserva.id}>
-              <td>{formatearFecha(reserva.fecha)}</td>
+              <td>
+                <Link className="enlace-reserva" href={`/reservas/${reserva.id}`}>
+                  {formatearFecha(reserva.fecha)}
+                </Link>
+              </td>
               <td>{formatearHora(reserva.horaInicio)}–{formatearHora(reserva.horaFin)}</td>
               <td>{reserva.canchaNombre}</td>
               <td>{reserva.clienteNombre}</td>

@@ -1,6 +1,6 @@
 import type { PoolClient } from 'pg';
 import { consultar } from '@/lib/db/conexion';
-import { LIMITE_LISTADO } from '@/lib/config/reservagol';
+import { LIMITE_LISTADO, PRECIO_HORA_BASE } from '@/lib/config/reservagol';
 import { ErrorDeNegocio } from '@/lib/reglas/errores';
 import { esquemaCancha } from '@/lib/validacion/esquemas';
 import type { Cancha, DatosCancha } from './tipos';
@@ -33,7 +33,7 @@ export async function crearCancha(datos: DatosCancha): Promise<{ id: string }> {
       `INSERT INTO canchas (nombre, precio_hora)
        VALUES ($1, $2)
        RETURNING id`,
-      [cancha.nombre, cancha.precioHora ?? null],
+      [cancha.nombre, cancha.precioHora ?? PRECIO_HORA_BASE],
     );
     const creada = filas[0];
     if (!creada) throw new ErrorDeNegocio('ERROR_INTERNO');

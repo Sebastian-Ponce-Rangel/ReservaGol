@@ -7,9 +7,15 @@ export function proxy(request: NextRequest): NextResponse {
   const secreto = process.env.RESERVAGOL_SESSION_SECRET ?? '';
   if (token && verificarTokenSesion(token, secreto)) return NextResponse.next();
 
+  const ruta = request.nextUrl.pathname;
+  const esReservaPublica = ruta === '/reservas';
+  const esApiPublica = ruta === '/api/reservas/publica';
+  if (esReservaPublica || esApiPublica) return NextResponse.next();
+
   const esApi =
-    request.nextUrl.pathname === '/api/reservas' ||
-    request.nextUrl.pathname.startsWith('/api/reservas/');
+    ruta === '/api/reservas' ||
+    ruta.startsWith('/api/reservas/');
+  const esPaginaProtegida = ruta === '/admin' || ruta.startsWith('/admin/') || ruta.startsWith('/reservas/');
 
   if (esApi) {
     return NextResponse.json(
@@ -25,6 +31,8 @@ export function proxy(request: NextRequest): NextResponse {
     );
   }
 
+  if (!esPaginaProtegida) return NextResponse.next();
+
   const urlLogin = request.nextUrl.clone();
   urlLogin.pathname = '/login';
   urlLogin.search = '';
@@ -34,5 +42,5 @@ export function proxy(request: NextRequest): NextResponse {
 }
 
 export const config = {
-  matcher: ['/reservas/:path*', '/api/reservas/:path*'],
+  matcher: ['/reservas/:path*', '/admin/:path*', '/api/reservas/:path*'],
 };

@@ -25,6 +25,41 @@ function diagnosticarCuerpo(cuerpo: unknown) {
   };
 }
 
+function origenesDeSolicitud(request: Request): string[] {
+  const url = new URL(request.url);
+  const origenes = new Set([url.origin]);
+  const protocoloReenviado = request.headers.get('x-forwarded-proto')?.split(',')[0]?.trim();
+  const protocolo = protocoloReenviado ? `${protocoloReenviado}:` : url.protocol;
+
+  function agregarOrigen(host: string | null, protocoloOrigen: string) {
+    if (!host || !['http:', 'https:'].includes(protocoloOrigen)) return;
+    try {
+      origenes.add(new URL(`${protocoloOrigen}//${host}`).origin);
+    } catch {
+      // Un host inválido no debe habilitar el POST.
+    }
+  }
+
+  agregarOrigen(request.headers.get('host'), protocolo);
+  if (protocoloReenviado) {
+    const hostReenviado = request.headers.get('x-forwarded-host')?.split(',')[0]?.trim();
+    agregarOrigen(hostReenviado ?? null, protocolo);
+  }
+  return [...origenes];
+}
+
+function origenPermitido(request: Request): boolean {
+  const origen = request.headers.get('origin');
+  if (!origen) return false;
+
+  try {
+    const urlOrigen = new URL(origen);
+    return urlOrigen.origin === origen && origenesDeSolicitud(request).includes(origen);
+  } catch {
+    return false;
+  }
+}
+
 type ErrorPostgres = Error & {
   code?: string;
   severity?: string;
@@ -55,8 +90,7 @@ export const GET = conManejoDeErrores(async (request: Request) => {
 });
 
 export const POST = conManejoDeErrores(async (request: Request) => {
-  const origen = request.headers.get('origin');
-  if (!origen || new URL(origen).origin !== new URL(request.url).origin) {
+  if (!origenPermitido(request)) {
     return NextResponse.json(
       { ok: false, error: { codigo: 'NO_AUTORIZADO', mensaje: 'Origen no permitido.', detalles: null } },
       { status: 403, headers: { 'Cache-Control': 'no-store' } },

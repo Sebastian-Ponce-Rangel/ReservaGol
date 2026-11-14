@@ -70,6 +70,28 @@ describe('API pública de reservas', () => {
     expect(JSON.stringify(logSpy.mock.calls)).not.toContain('cliente@example.com');
   });
 
+  it('acepta el origen público reenviado por el proxy aunque la URL interna use otro host', async () => {
+    const response = await POST(new Request('http://next-interno/api/reservas/publica', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Origin: 'https://reservagol.example',
+        Host: 'next-interno',
+        'x-forwarded-host': 'reservagol.example',
+        'x-forwarded-proto': 'https',
+      },
+      body: JSON.stringify({
+        canchaId: '98b5f05a-7f6d-4c35-96a1-e338d770c09a',
+        clienteNuevo: { nombre: 'Cliente Público', contacto: '3001234567', email: 'cliente@example.com' },
+        fecha: '2026-11-20', horaInicio: '18:00', horaFin: '19:00',
+        metodoAnticipo: 'transferencia', politicasAceptadas: true,
+      }),
+    }));
+
+    expect(response.status).toBe(201);
+    expect(crearReservaPublica).toHaveBeenCalledOnce();
+  });
+
   it('registra metadatos de PostgreSQL si falla la persistencia', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const error = Object.assign(new Error('column missing'), {

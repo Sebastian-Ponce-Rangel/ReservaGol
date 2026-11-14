@@ -199,3 +199,10 @@
 - El mensaje compartido por el usuario solo confirma un rechazo HTTP; no incluye el estado ni el cuerpo y no identifica si fue validación, origen, conflicto o error interno. No se inventó una causa ni se ejecutó una reserva artificial.
 - `npm.cmd test -- src\test\reservas\agenda-cliente.test.tsx`: 5 pruebas pasaron.
 - Evidencia: `doc/checkpoints/FASE_9_COMPLETADA.md`.
+
+### P19 · Corregir validación de origen detrás de proxy · 2026-11-14
+
+- El intento real devolvió HTTP 403 `NO_AUTORIZADO` con `Origen no permitido.`; la petición se rechazaba antes de ejecutar la persistencia, por lo que este intento no llegó a PostgreSQL.
+- Se ajustó la comparación para aceptar el origen exacto del `Host` y, detrás de proxy, el par `x-forwarded-host`/`x-forwarded-proto`, manteniendo el rechazo de origen externo y de solicitudes sin `Origin`.
+- Se agregó una prueba para el host interno distinto del origen público reenviado.
+- Evidencia: `doc/checkpoints/FASE_9_COMPLETADA.md`.

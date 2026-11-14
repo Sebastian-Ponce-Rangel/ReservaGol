@@ -161,11 +161,17 @@ export function AgendaCliente({ canchas, ocupadas, fechas, hoy, canchaInicial }:
         throw new Error('La respuesta del servidor no contiene JSON válido.');
       }
       if (!response.ok) {
-        console.error('El servidor rechazó la reserva.', {
+        const diagnostico = {
           status: response.status,
-          codigo: resultado.error?.codigo,
-          ...(process.env.NODE_ENV === 'production' ? {} : { textoError: textoRespuesta }),
-        });
+          codigo: resultado.error?.codigo ?? null,
+          ...(process.env.NODE_ENV === 'production'
+            ? {}
+            : {
+                respuesta: textoRespuesta.slice(0, 2000),
+                respuestaTruncada: textoRespuesta.length > 2000,
+              }),
+        };
+        console.error(`El servidor rechazó la reserva. ${JSON.stringify(diagnostico)}`);
         setAviso({ tipo: 'error', texto: resultado.error?.mensaje ?? 'No se pudo completar la reserva.' });
         router.refresh();
         return;

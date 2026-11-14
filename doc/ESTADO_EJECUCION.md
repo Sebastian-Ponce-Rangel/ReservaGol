@@ -192,3 +192,10 @@
 - `npm.cmd test -- src\test\reservas\publica-route.test.ts`: 5 pruebas pasaron. `npm.cmd test`: 82 pruebas pasaron en 22 archivos. `npm.cmd run build`: exitoso.
 - No se reprodujo el POST contra la base para evitar crear una reserva real de prueba; el motivo concreto se conocerá al revisar el nuevo log del servidor tras el próximo intento.
 - Evidencia: `doc/checkpoints/FASE_9_COMPLETADA.md`.
+
+### P18 · Diagnóstico visible de rechazo en navegador · 2026-11-14
+
+- El registro de error de `AgendaCliente` ahora serializa como texto el estado HTTP, el código funcional y el cuerpo saneado de la respuesta en desarrollo, con límite de 2.000 caracteres para evitar salidas excesivas. En producción no imprime el cuerpo.
+- El mensaje compartido por el usuario solo confirma un rechazo HTTP; no incluye el estado ni el cuerpo y no identifica si fue validación, origen, conflicto o error interno. No se inventó una causa ni se ejecutó una reserva artificial.
+- `npm.cmd test -- src\test\reservas\agenda-cliente.test.tsx`: 5 pruebas pasaron.
+- Evidencia: `doc/checkpoints/FASE_9_COMPLETADA.md`.

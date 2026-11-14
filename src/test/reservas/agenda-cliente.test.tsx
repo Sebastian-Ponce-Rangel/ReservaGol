@@ -86,11 +86,14 @@ describe('AgendaCliente', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Solicitar reserva' }));
 
     expect(await screen.findByText('La franja ya está ocupada.')).toBeInTheDocument();
-    expect(errorSpy).toHaveBeenCalledWith('El servidor rechazó la reserva.', {
-      status: 409,
-      codigo: 'CHOQUE_HORARIO',
-      textoError,
-    });
+    expect(errorSpy).toHaveBeenCalledWith(
+      `El servidor rechazó la reserva. ${JSON.stringify({
+        status: 409,
+        codigo: 'CHOQUE_HORARIO',
+        respuesta: textoError,
+        respuestaTruncada: false,
+      })}`,
+    );
     errorSpy.mockRestore();
   });
 

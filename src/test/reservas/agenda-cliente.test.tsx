@@ -101,8 +101,8 @@ describe('AgendaCliente', () => {
     render(<AgendaCliente canchas={[CANCHA]} ocupadas={[]} fechas={FECHAS} hoy="2026-11-12" canchaInicial={CANCHA.id} />);
 
     fireEvent.click(screen.getAllByRole('button', { name: /libre/i })[0]!);
-    expect(screen.getByText(/60\.000\/h \(tarifa base\)/)).toBeInTheDocument();
-    expect(screen.getByText(/15\.000/)).toBeInTheDocument();
+    expect(screen.getByText(/60\.000\/h COP \(tarifa base\)/)).toBeInTheDocument();
+    expect(screen.getByText(/15\.000 COP/)).toBeInTheDocument();
     expect(screen.queryByLabelText(/valor total/i)).not.toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText('Nombre completo'), { target: { value: 'Ana Prueba' } });

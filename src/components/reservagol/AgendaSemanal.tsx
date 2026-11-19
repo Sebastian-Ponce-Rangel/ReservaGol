@@ -354,7 +354,7 @@ export function AgendaSemanal({
                     </Selector>
                     <div className="agenda-total">
                       <div>
-                        <span>Total de la reserva · {duracionHoras || 1} h × {tarifaPorHora === null ? 'sin tarifa' : `${formatearPesos(tarifaPorHora)}/h`}</span>
+                        <span>Total de la reserva · {duracionHoras || 1} h × {tarifaPorHora === null ? 'sin tarifa' : `${formatearPesos(tarifaPorHora).replace(/ COP$/, '')}/h COP`}</span>
                         <strong>{valorValido ? formatearPesos(valorNumerico) : 'Tarifa no configurada'}</strong>
                       </div>
                       <div className="agenda-anticipo">

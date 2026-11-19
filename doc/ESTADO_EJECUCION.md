@@ -206,3 +206,11 @@
 - Se ajustó la comparación para aceptar el origen exacto del `Host` y, detrás de proxy, el par `x-forwarded-host`/`x-forwarded-proto`, manteniendo el rechazo de origen externo y de solicitudes sin `Origin`.
 - Se agregó una prueba para el host interno distinto del origen público reenviado.
 - Evidencia: `doc/checkpoints/FASE_9_COMPLETADA.md`.
+
+### P20 · Rediseño SaaS deportivo nocturno · 2026-11-19
+
+- Se convirtió la interfaz pública y privada a una identidad dark mode con fondo profundo `#090D16`, superficies `#131C2E`, texto principal claro y verde esmeralda `#10B981`.
+- Se añadió `<CustomCursor />` al layout raíz con puntero rojo `#EF4444`, estela suavizada y `pointer-events: none`; conserva el cursor nativo en dispositivos táctiles.
+- Se añadió scroll horizontal limpio y ancho mínimo a la tabla de reservas recientes del propietario para mantener visible la columna de estado de pago.
+- Los montos compartidos ahora usan formato consistente `$80.000 COP`.
+- Evidencia: `doc/checkpoints/FASE_10_COMPLETADA.md`.

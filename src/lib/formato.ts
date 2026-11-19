@@ -1,11 +1,5 @@
 import { esFechaValida } from '@/lib/reglas/fechas';
 
-const FORMATO_PESOS = new Intl.NumberFormat('es-CO', {
-  style: 'currency',
-  currency: 'COP',
-  maximumFractionDigits: 0,
-});
-
 const FORMATO_FECHA = new Intl.DateTimeFormat('es-CO', {
   day: 'numeric',
   month: 'long',
@@ -14,7 +8,11 @@ const FORMATO_FECHA = new Intl.DateTimeFormat('es-CO', {
 });
 
 export function formatearPesos(monto: number): string {
-  return FORMATO_PESOS.format(monto);
+  const entero = Math.max(0, Math.round(monto));
+  const formateado = new Intl.NumberFormat('es-CO', {
+    maximumFractionDigits: 0,
+  }).format(entero);
+  return `$${formateado} COP`;
 }
 
 export function formatearFecha(fecha: string): string {

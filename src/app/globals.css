@@ -2566,3 +2566,363 @@ body {
   color: #64748b;
   font-size: 0.78rem;
 }
+
+/* Identidad visual nocturna ReservaGol */
+:root {
+  --page-bg: #090d16;
+  --green: #10b981;
+  --green-dark: #131c2e;
+  --text: #f3f4f6;
+  --muted: #9ca3af;
+  --line: rgba(255, 255, 255, 0.1);
+  --red: #ef4444;
+}
+
+html,
+body {
+  background: var(--page-bg);
+  color: var(--text);
+}
+
+body {
+  background:
+    radial-gradient(circle at 85% 12%, rgba(16, 185, 129, 0.08), transparent 22rem),
+    radial-gradient(circle at 10% 90%, rgba(239, 68, 68, 0.055), transparent 22rem),
+    var(--page-bg);
+}
+
+.app-shell,
+.page-shell,
+.landing-page,
+.app-contenido,
+.login-shell {
+  background: transparent;
+}
+
+.hero,
+.login-panel,
+.tabla-contenedor,
+.formulario-panel,
+.lista-entidades,
+.agenda-semana-filtros,
+.agenda-matriz,
+.agenda-reserva-panel,
+.resumen-filtros,
+.resumen-seccion,
+.admin-metrica,
+.admin-tabla-seccion,
+.admin-accesos a,
+.modal,
+.cliente-reservas .tabla-contenedor {
+  border: 1px solid var(--line);
+  background: rgba(19, 28, 46, 0.92);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.app-nav,
+.app-nav-superior,
+.app-nav-inferior {
+  border-color: var(--line);
+  background: rgba(9, 13, 22, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.app-nav-inferior {
+  border-top: 1px solid var(--line);
+}
+
+.app-nav .app-link:hover,
+.app-nav .app-link--activo {
+  background: rgba(16, 185, 129, 0.16);
+  color: #6ee7b7;
+}
+
+.app-nav .app-brand-marca,
+.app-brand-marca,
+.boton--primario,
+.login-submit,
+.admin-filtro-periodo button,
+.agenda-confirmar {
+  background: var(--green);
+  color: #08110d;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.18);
+}
+
+.boton--primario:hover:not(:disabled),
+.login-submit:hover:not(:disabled),
+.admin-filtro-periodo button:hover,
+.agenda-confirmar:hover:not(:disabled) {
+  background: #34d399;
+  color: #08110d;
+}
+
+.boton--secundario,
+.campo-control,
+.login-field input,
+.admin-filtro-periodo input,
+.agenda-modo-cliente,
+.agenda-modo-cliente button,
+.agenda-semana-boton {
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--text);
+}
+
+.boton--secundario:hover:not(:disabled),
+.agenda-semana-boton:hover:not(.agenda-semana-boton--desactivado) {
+  border-color: rgba(16, 185, 129, 0.45);
+  background: rgba(16, 185, 129, 0.1);
+  color: #6ee7b7;
+}
+
+.campo-control option,
+.login-field input::placeholder {
+  background: #131c2e;
+  color: #9ca3af;
+}
+
+.tabla-reservas th,
+.tabla-agenda-global thead th,
+.agenda-matriz-tabla thead th,
+.agenda-columna-hora,
+.agenda-hora,
+.tabla-agenda-global th:first-child,
+.agenda-modo-cliente {
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--muted);
+}
+
+.tabla-reservas th,
+.tabla-reservas td,
+.tabla-agenda-global th,
+.tabla-agenda-global td,
+.agenda-matriz-tabla th,
+.agenda-matriz-tabla td,
+.tabla-contenedor,
+.formulario-panel,
+.lista-entidades,
+.cliente-reservas .tabla-contenedor,
+.agenda-modo-cliente,
+.agenda-reserva-datos dt,
+.agenda-total,
+.fila-entidad,
+.cliente-reservas h4 {
+  border-color: var(--line);
+}
+
+.admin-metrica strong,
+.admin-cabecera h1,
+.pagina-cabecera h1,
+.seccion-cabecera h2,
+.agenda-reserva-panel h2,
+.agenda-reserva-datos dd,
+.agenda-total strong,
+.login-heading h1,
+.hero h1 {
+  color: var(--text);
+}
+
+.admin-cabecera > div > p:last-child,
+.admin-periodo,
+.admin-metrica span,
+.admin-metrica small,
+.pagina-conteo,
+.tabla-reservas td,
+.agenda-reserva-datos dt,
+.agenda-total span,
+.agenda-total small,
+.login-heading p,
+.login-footer,
+.login-field label,
+.subtitle,
+.cliente-saldo,
+.cliente-sin-reservas {
+  color: var(--muted);
+}
+
+.seccion-kicker,
+.login-eyebrow,
+.enlace-reserva,
+.admin-enlace,
+.agenda-dia--hoy,
+.agenda-hoy,
+.aviso--exito,
+.insignia--verde {
+  color: #34d399;
+}
+
+.agenda-celda--libre,
+.agenda-badge--libre,
+.insignia--verde {
+  border-color: rgba(16, 185, 129, 0.32);
+  background: rgba(16, 185, 129, 0.12);
+  color: #6ee7b7;
+}
+
+.agenda-celda--ocupada,
+.agenda-badge--ocupada,
+.insignia--rojo,
+.agenda-reserva-mini,
+.login-error,
+.login-auth-error,
+.campo-error,
+.aviso--error {
+  border-color: rgba(239, 68, 68, 0.32);
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+}
+
+.agenda-celda--libre:hover:not(:disabled),
+.agenda-celda--seleccionada {
+  border-color: var(--green);
+  background: rgba(16, 185, 129, 0.24);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.16);
+}
+
+.insignia--amarillo {
+  border-color: rgba(245, 158, 11, 0.32);
+  background: rgba(245, 158, 11, 0.12);
+  color: #fcd34d;
+}
+
+.insignia--neutro,
+.agenda-badge--pasada {
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--muted);
+}
+
+.landing-page {
+  background:
+    linear-gradient(135deg, rgba(9, 13, 22, 0.2), rgba(19, 28, 46, 0.82)),
+    var(--page-bg);
+}
+
+.landing-nav {
+  border-bottom: 1px solid var(--line);
+}
+
+.landing-owner,
+.landing-cta,
+.public-brand,
+.public-brand-mark,
+.landing-eyebrow {
+  color: #f3f4f6;
+}
+
+.landing-owner,
+.landing-cta {
+  border-color: rgba(16, 185, 129, 0.55);
+  background: var(--green);
+  color: #08110d;
+}
+
+.landing-owner:hover,
+.landing-cta:hover {
+  background: #34d399;
+  color: #08110d;
+}
+
+.landing-footer,
+.landing-hero > p:not(.landing-eyebrow) {
+  color: var(--muted);
+}
+
+.agenda-hero {
+  border: 1px solid rgba(16, 185, 129, 0.38);
+  background:
+    linear-gradient(135deg, rgba(16, 185, 129, 0.16), rgba(19, 28, 46, 0.94)),
+    #131c2e;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+}
+
+.agenda-hero .boton--primario {
+  border: 0;
+  background: var(--green);
+  color: #08110d;
+}
+
+.admin-tabla-seccion {
+  padding: 1rem;
+  border-radius: 0.85rem;
+}
+
+.admin-tabla-seccion .tabla-contenedor {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  scrollbar-color: rgba(16, 185, 129, 0.55) rgba(255, 255, 255, 0.04);
+  scrollbar-width: thin;
+}
+
+.admin-tabla-seccion:last-of-type .tabla-reservas {
+  min-width: 1050px;
+}
+
+.tabla-reservas th:nth-last-child(2),
+.tabla-reservas td:nth-last-child(2) {
+  min-width: 7.5rem;
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+
+.cursor-rojo,
+.cursor-estela {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform;
+  transition: opacity 120ms ease;
+}
+
+.cursor-rojo {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow:
+    0 0 8px #ef4444,
+    0 0 20px rgba(239, 68, 68, 0.85),
+    0 0 36px rgba(239, 68, 68, 0.5);
+}
+
+.cursor-estela {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(239, 68, 68, 0.38);
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.08);
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.22);
+}
+
+.cursor-rojo[data-visible='true'],
+.cursor-estela[data-visible='true'] {
+  opacity: 1;
+}
+
+@media (pointer: fine) {
+  body,
+  a,
+  button,
+  input,
+  select,
+  textarea {
+    cursor: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-tabla-seccion {
+    padding: 0.75rem;
+  }
+
+  .admin-tabla-seccion .tabla-contenedor {
+    -webkit-overflow-scrolling: touch;
+  }
+}

@@ -29,3 +29,9 @@
 - Sin bloque ni óvalo detrás del título principal.
 - Resplandor ambiental difuminado centrado.
 - Barra, propietario y cursor conservados sin cambios.
+
+## Corrección P24
+
+- Filtros de `/reservas` en `#131C2E` con borde blanco al 10%.
+- Selectores y fechas con contraste dark mode.
+- Navegación de semana y superficies relacionadas sin blancos heredados.

@@ -215,7 +215,7 @@ export function AgendaSemanal({
         </div>
       </header>
 
-      <form className="agenda-semana-filtros rounded-xl border border-slate-200 bg-white p-5 shadow-sm" action="/reservas" method="get">
+      <form className="agenda-semana-filtros rounded-2xl border border-white/10 bg-[#131C2E]/90 p-5 shadow-sm" action="/reservas" method="get">
         <Selector
           etiqueta="Cancha"
           name="canchaId"
@@ -238,7 +238,7 @@ export function AgendaSemanal({
       ) : (
         <>
           <div className={seleccion ? 'agenda-board agenda-board--seleccionada' : 'agenda-board'}>
-            <section className="agenda-matriz rounded-xl border border-slate-200 bg-white p-4 shadow-sm" aria-labelledby="matriz-titulo">
+            <section className="agenda-matriz rounded-2xl border border-white/10 bg-[#131C2E]/90 p-4 shadow-sm" aria-labelledby="matriz-titulo">
               <div className="seccion-cabecera">
                 <h2 id="matriz-titulo">Disponibilidad</h2>
                 <div className="agenda-leyenda" aria-label="Leyenda de disponibilidad">
@@ -318,7 +318,7 @@ export function AgendaSemanal({
             </section>
 
             {seleccion && canchaSeleccionada && (
-              <aside className="agenda-reserva-panel rounded-xl border border-slate-200 bg-white p-5 shadow-sm" aria-labelledby="tu-reserva-titulo">
+              <aside className="agenda-reserva-panel rounded-2xl border border-white/10 bg-[#131C2E]/90 p-5 shadow-sm" aria-labelledby="tu-reserva-titulo">
                 <p className="seccion-kicker">Franja seleccionada</p>
                 <h2 id="tu-reserva-titulo">Tu Reserva</h2>
                 <dl className="agenda-reserva-datos">

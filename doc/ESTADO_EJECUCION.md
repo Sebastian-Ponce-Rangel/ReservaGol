@@ -232,3 +232,9 @@
 - Se retiró por completo la pastilla/óvalo detrás de las letras del título principal.
 - Se conserva un resplandor ambiental verde centrado con `blur-3xl` y `opacity-20`.
 - El título usa blanco puro y extra negrita; la etiqueta usa esmeralda con espaciado.
+
+### P24 · Filtros dark mode en /reservas · 2026-11-19
+
+- Las tarjetas de filtros, matrices, paneles de reserva y resumen usan superficies `#131C2E` con borde blanco al 10%.
+- Selectores, fechas, botones de navegación y modos de cliente mantienen fondos/oscuros y texto legible.
+- Se eliminaron fondos blancos heredados de las vistas de reservas mediante reglas finales de cierre visual.

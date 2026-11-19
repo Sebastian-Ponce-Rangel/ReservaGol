@@ -249,7 +249,7 @@ export function AgendaCliente({ canchas, ocupadas, fechas, hoy, canchaInicial }:
         />
       ) : (
       <div className={seleccion ? 'agenda-board agenda-board--seleccionada' : 'agenda-board'}>
-        <section className="agenda-matriz rounded-xl border border-slate-200 bg-white p-4 shadow-sm" aria-labelledby="disponibilidad-publica">
+        <section className="agenda-matriz rounded-2xl border border-white/10 bg-[#131C2E]/90 p-4 shadow-sm" aria-labelledby="disponibilidad-publica">
           <div className="seccion-cabecera">
             <h2 id="disponibilidad-publica">Disponibilidad</h2>
             <div className="agenda-leyenda"><span className="agenda-badge agenda-badge--libre">Libre</span><span className="agenda-badge agenda-badge--ocupada">Ocupada</span></div>
@@ -269,7 +269,7 @@ export function AgendaCliente({ canchas, ocupadas, fechas, hoy, canchaInicial }:
           </div>
         </section>
 
-        {seleccion && cancha && <aside className="agenda-reserva-panel rounded-xl border border-slate-200 bg-white p-5 shadow-sm" aria-labelledby="tu-reserva-publica">
+        {seleccion && cancha && <aside className="agenda-reserva-panel rounded-2xl border border-white/10 bg-[#131C2E]/90 p-5 shadow-sm" aria-labelledby="tu-reserva-publica">
           <p className="seccion-kicker">Paso 2 · Confirma tus datos</p>
           <h2 id="tu-reserva-publica">Tu reserva</h2>
           <dl className="agenda-reserva-datos"><div><dt>Cancha</dt><dd>{cancha.nombre}</dd></div><div><dt>Fecha</dt><dd>{formatearFecha(seleccion.fecha)}</dd></div><div><dt>Horario</dt><dd>{formatearHora(seleccion.horaInicio)}–{formatearHora(seleccion.horaFin)}</dd></div></dl>

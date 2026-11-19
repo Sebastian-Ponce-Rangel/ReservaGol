@@ -1946,9 +1946,51 @@ body {
   gap: 1rem;
   margin: 0;
   padding: 1rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.75rem;
-  background: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  background: rgba(19, 28, 46, 0.9);
+}
+
+.public-booking-filtros .campo label {
+  color: #9ca3af;
+}
+
+.public-booking-filtros .campo-control,
+.agenda-semana-filtros .campo-control,
+.resumen-filtros .campo-control {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: #090d16;
+  color: #f3f4f6;
+}
+
+.public-booking-filtros .campo-control option,
+.agenda-semana-filtros .campo-control option,
+.resumen-filtros .campo-control option {
+  background: #090d16;
+  color: #f3f4f6;
+}
+
+.agenda-semana-navegacion p {
+  color: #f3f4f6;
+  font-weight: 700;
+}
+
+.agenda-semana-boton {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.035);
+  color: #34d399;
+}
+
+.agenda-semana-boton:hover:not(.agenda-semana-boton--desactivado) {
+  border-color: rgba(52, 211, 153, 0.5);
+  background: rgba(16, 185, 129, 0.12);
+  color: #6ee7b7;
+}
+
+.agenda-semana-boton--desactivado {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.025);
+  color: #6b7280;
 }
 
 .public-booking-confirmada {
@@ -2938,4 +2980,62 @@ body {
   .admin-tabla-seccion .tabla-contenedor {
     -webkit-overflow-scrolling: touch;
   }
+}
+
+/* Cierre visual oscuro definitivo para todas las superficies de /reservas */
+.public-booking-filtros,
+.agenda-semana-filtros,
+.resumen-filtros,
+.agenda-matriz,
+.agenda-reserva-panel,
+.resumen-seccion,
+.modal {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 1rem;
+  background: rgba(19, 28, 46, 0.92) !important;
+  color: #f3f4f6;
+}
+
+.public-booking-filtros .campo-control,
+.agenda-semana-filtros .campo-control,
+.resumen-filtros .campo-control,
+.agenda-modo-cliente,
+.agenda-modo-cliente button,
+.agenda-semana-boton {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  background: #090d16 !important;
+  color: #f3f4f6 !important;
+}
+
+.public-booking-filtros .campo-control option,
+.agenda-semana-filtros .campo-control option,
+.resumen-filtros .campo-control option {
+  background: #090d16;
+  color: #f3f4f6;
+}
+
+.agenda-modo-cliente button[aria-pressed='true'] {
+  background: rgba(16, 185, 129, 0.16) !important;
+  color: #6ee7b7 !important;
+  box-shadow: none;
+}
+
+.agenda-semana-navegacion p {
+  color: #f3f4f6 !important;
+  font-weight: 700;
+}
+
+.agenda-semana-boton {
+  color: #34d399 !important;
+}
+
+.agenda-semana-boton:hover:not(.agenda-semana-boton--desactivado) {
+  border-color: rgba(52, 211, 153, 0.5) !important;
+  background: rgba(16, 185, 129, 0.12) !important;
+  color: #6ee7b7 !important;
+}
+
+.agenda-semana-boton--desactivado {
+  background: rgba(255, 255, 255, 0.025) !important;
+  color: #6b7280 !important;
 }

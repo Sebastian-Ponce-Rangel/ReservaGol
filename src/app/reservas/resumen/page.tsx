@@ -72,14 +72,14 @@ export default async function ResumenPage({ searchParams }: Props) {
         </Link>
       </header>
 
-      <form className="resumen-filtros rounded-xl border border-slate-200 bg-white p-5 shadow-sm" action="/reservas/resumen" method="get">
+      <form className="resumen-filtros rounded-2xl border border-white/10 bg-[#131C2E]/90 p-5 shadow-sm" action="/reservas/resumen" method="get">
         <Campo etiqueta="Día de agenda" name="fecha" type="date" defaultValue={fecha} required />
         <Campo etiqueta="Cobros desde" name="desde" type="date" defaultValue={desde} required />
         <Campo etiqueta="Cobros hasta" name="hasta" type="date" defaultValue={hasta} required />
         <Boton variante="secundario" type="submit">Consultar</Boton>
       </form>
 
-      <section className="resumen-seccion rounded-xl border border-slate-200 bg-white p-5 shadow-sm" aria-labelledby="agenda-global-titulo">
+      <section className="resumen-seccion rounded-2xl border border-white/10 bg-[#131C2E]/90 p-5 shadow-sm" aria-labelledby="agenda-global-titulo">
         <div className="seccion-cabecera">
           <h2 id="agenda-global-titulo">Agenda de todas las canchas</h2>
           <span className="pagina-conteo">{formatearFecha(fecha)}</span>
@@ -130,7 +130,7 @@ export default async function ResumenPage({ searchParams }: Props) {
         )}
       </section>
 
-      <section className="resumen-seccion rounded-xl border border-slate-200 bg-white p-5 shadow-sm" aria-labelledby="cobros-titulo">
+      <section className="resumen-seccion rounded-2xl border border-white/10 bg-[#131C2E]/90 p-5 shadow-sm" aria-labelledby="cobros-titulo">
         <div className="seccion-cabecera">
           <h2 id="cobros-titulo">Resumen de cobros</h2>
           <span className="pagina-conteo">{formatearFecha(desde)} – {formatearFecha(hasta)}</span>

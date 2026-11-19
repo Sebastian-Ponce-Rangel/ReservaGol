@@ -16,16 +16,16 @@ export default function HomePage() {
           Soy Propietario
         </Link>
       </header>
-      <section className="landing-hero">
-        <p className="landing-eyebrow">RESERVAS DEPORTIVAS</p>
-        <h1>
-          <span className="text-white">Tu próxima</span>{' '}
-          <span className="bg-gradient-to-r from-emerald-400 via-cyan-300 to-rose-500 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(16,185,129,0.35)]">
-            cancha empieza aquí
-          </span>
-        </h1>
+      <section className="landing-hero relative">
+        <div className="absolute inset-x-1/4 top-1/4 h-48 -translate-y-1/2 pointer-events-none" aria-hidden="true">
+          <div className="absolute inset-0 rounded-full bg-emerald-500/15 blur-3xl" />
+          <div className="absolute left-1/4 top-1/4 h-24 w-24 rounded-full bg-orange-500/10 blur-3xl" />
+          <div className="absolute right-1/4 top-1/3 h-24 w-24 rounded-full bg-rose-500/10 blur-3xl" />
+        </div>
+        <p className="landing-eyebrow text-emerald-400">RESERVAS DEPORTIVAS</p>
+        <h1 className="text-white">Tu próxima cancha empieza aquí</h1>
         <p>Encuentra un horario disponible y asegura tu próximo partido.</p>
-        <Link className="landing-cta" href="/reservas">Reservar ahora</Link>
+        <Link className="landing-cta text-white font-semibold" href="/reservas">Reservar ahora</Link>
       </section>
       <footer className="landing-footer">ReservaGol · Canchas, horarios y partidos</footer>
     </main>

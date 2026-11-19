@@ -1826,9 +1826,10 @@ body {
 }
 
 .landing-hero h1 {
-  max-width: 13ch;
+  position: relative;
+  max-width: 18ch;
   margin: 0;
-  color: #0f172a;
+  color: #ffffff;
   font-size: clamp(2.5rem, 6vw, 4.6rem);
   font-weight: 850;
   line-height: 1.04;

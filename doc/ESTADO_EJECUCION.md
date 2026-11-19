@@ -220,3 +220,9 @@
 - El título principal de inicio divide "Tu próxima" en blanco puro y el resto en degradado esmeralda-cian-rosa con brillo.
 - La barra superior ocupa todo el ancho con fondo translúcido y el botón "Soy Propietario" usa contraste esmeralda.
 - El cursor hueco fue eliminado; ahora conserva únicamente el punto rojo luminoso y una estela de partículas rojizas que se desvanece.
+
+### P22 · Restauración del título completo del landing · 2026-11-19
+
+- Se restauró el título completo "Tu próxima cancha empieza aquí" en blanco puro.
+- La etiqueta superior usa verde esmeralda vibrante y el hero incluye resplandor verde con acentos naranja y rosa.
+- El botón "Reservar ahora" mantiene fondo verde con texto blanco y peso semibold.

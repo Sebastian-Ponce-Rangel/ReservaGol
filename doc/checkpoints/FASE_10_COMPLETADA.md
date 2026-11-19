@@ -17,3 +17,9 @@
 - Título principal con texto blanco y degradado neón.
 - Navbar completa con fondo translúcido y botón propietario esmeralda.
 - Cursor sin aro: punto rojo más estela de partículas en canvas.
+
+## Corrección P22
+
+- El título completo del landing aparece en `text-white`.
+- Se añadieron resplandor esmeralda y acentos naranja/rosa detrás del título.
+- La etiqueta superior usa esmeralda y el CTA mantiene texto blanco.

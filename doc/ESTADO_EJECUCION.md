@@ -226,3 +226,9 @@
 - Se restauró el título completo "Tu próxima cancha empieza aquí" en blanco puro.
 - La etiqueta superior usa verde esmeralda vibrante y el hero incluye resplandor verde con acentos naranja y rosa.
 - El botón "Reservar ahora" mantiene fondo verde con texto blanco y peso semibold.
+
+### P23 · Limpieza del fondo del título · 2026-11-19
+
+- Se retiró por completo la pastilla/óvalo detrás de las letras del título principal.
+- Se conserva un resplandor ambiental verde centrado con `blur-3xl` y `opacity-20`.
+- El título usa blanco puro y extra negrita; la etiqueta usa esmeralda con espaciado.

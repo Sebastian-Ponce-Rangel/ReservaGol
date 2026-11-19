@@ -17,13 +17,9 @@ export default function HomePage() {
         </Link>
       </header>
       <section className="landing-hero relative">
-        <div className="absolute inset-x-1/4 top-1/4 h-48 -translate-y-1/2 pointer-events-none" aria-hidden="true">
-          <div className="absolute inset-0 rounded-full bg-emerald-500/15 blur-3xl" />
-          <div className="absolute left-1/4 top-1/4 h-24 w-24 rounded-full bg-orange-500/10 blur-3xl" />
-          <div className="absolute right-1/4 top-1/3 h-24 w-24 rounded-full bg-rose-500/10 blur-3xl" />
-        </div>
-        <p className="landing-eyebrow text-emerald-400">RESERVAS DEPORTIVAS</p>
-        <h1 className="text-white">Tu próxima cancha empieza aquí</h1>
+        <div className="absolute left-1/2 top-1/2 h-56 w-[min(70vw,44rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-500/20 blur-3xl opacity-20 pointer-events-none" aria-hidden="true" />
+        <p className="landing-eyebrow text-emerald-400 font-semibold tracking-widest uppercase">RESERVAS DEPORTIVAS</p>
+        <h1 className="text-white font-extrabold">Tu próxima cancha empieza aquí</h1>
         <p>Encuentra un horario disponible y asegura tu próximo partido.</p>
         <Link className="landing-cta text-white font-semibold" href="/reservas">Reservar ahora</Link>
       </section>

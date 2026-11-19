@@ -23,3 +23,9 @@
 - El título completo del landing aparece en `text-white`.
 - Se añadieron resplandor esmeralda y acentos naranja/rosa detrás del título.
 - La etiqueta superior usa esmeralda y el CTA mantiene texto blanco.
+
+## Corrección P23
+
+- Sin bloque ni óvalo detrás del título principal.
+- Resplandor ambiental difuminado centrado.
+- Barra, propietario y cursor conservados sin cambios.

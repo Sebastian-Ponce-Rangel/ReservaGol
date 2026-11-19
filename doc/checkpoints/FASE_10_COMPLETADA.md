@@ -11,3 +11,9 @@
 
 - `npm.cmd run build`: correcto.
 - `npm.cmd test`: correcto después de actualizar las expectativas de moneda.
+
+## Pulido P21
+
+- Título principal con texto blanco y degradado neón.
+- Navbar completa con fondo translúcido y botón propietario esmeralda.
+- Cursor sin aro: punto rojo más estela de partículas en canvas.

@@ -214,3 +214,9 @@
 - Se añadió scroll horizontal limpio y ancho mínimo a la tabla de reservas recientes del propietario para mantener visible la columna de estado de pago.
 - Los montos compartidos ahora usan formato consistente `$80.000 COP`.
 - Evidencia: `doc/checkpoints/FASE_10_COMPLETADA.md`.
+
+### P21 · Pulido profesional del landing y cursor · 2026-11-19
+
+- El título principal de inicio divide "Tu próxima" en blanco puro y el resto en degradado esmeralda-cian-rosa con brillo.
+- La barra superior ocupa todo el ancho con fondo translúcido y el botón "Soy Propietario" usa contraste esmeralda.
+- El cursor hueco fue eliminado; ahora conserva únicamente el punto rojo luminoso y una estela de partículas rojizas que se desvanece.
